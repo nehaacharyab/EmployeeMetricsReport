@@ -5,6 +5,7 @@ import org.bigcompany.model.Manager;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -33,8 +34,8 @@ public class SalaryService {
         BigDecimal averageSubordinateSalary = calculateAverageSubordinateSalary(manager);
         BigDecimal expectedSalary = averageSubordinateSalary.multiply(multiplier);
         BigDecimal managerSalary = manager.getSalary();
-        BigDecimal underOrOverPayment = managerSalary.subtract(expectedSalary);
-        return underOrOverPayment.abs();
+        BigDecimal underOrOverPayment = managerSalary.subtract(expectedSalary).abs();
+        return underOrOverPayment.setScale(2, RoundingMode.HALF_UP);
     }
 
     /**
@@ -111,10 +112,14 @@ public class SalaryService {
         if (!(employee instanceof Manager manager)) {
             throw new IllegalArgumentException("CompanyStaff " + employee.getId() + " is not a manager");
         }
-        return manager.getSubordinates().stream()
+        List<CompanyStaff> subordinates = manager.getSubordinates();
+        if (subordinates.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal totalSalary = subordinates.stream()
                 .map(CompanyStaff::getSalary)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .divide(BigDecimal.valueOf(manager.getSubordinates().size()), RoundingMode.HALF_UP);
-    }
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        return totalSalary.divide(BigDecimal.valueOf(subordinates.size()), RoundingMode.HALF_UP);
+    }
 }

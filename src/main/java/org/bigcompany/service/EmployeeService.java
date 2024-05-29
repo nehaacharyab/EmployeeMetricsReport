@@ -28,7 +28,7 @@ public class EmployeeService {
             Map<String, CompanyStaff> employeeMap = employeeDAO.buildEmployeeMapFromCSV(CSV_FILE_PATH);
             for (CompanyStaff employee : employeeMap.values()) {
                 if (isManager(employee.getId(), employeeMap)) {
-                    CompanyStaff manager = new Manager.Builder()
+                    Manager manager = new Manager.Builder()
                             .setId(employee.getId())
                             .setFirstName(employee.getFirstName())
                             .setLastName(employee.getLastName())
@@ -69,7 +69,7 @@ public class EmployeeService {
             employee = employees.get(employee.getManagerId());
             length++;
         }
-        return length;
+        return length-1;
     }
 
     public List<CompanyStaff> getLongReportingLine() {
@@ -96,11 +96,11 @@ public class EmployeeService {
         }
 
         printEmployeeList("Employee with longer reporting line", employeeWithLongReportingLine);
-        printReport("Overpaid Managers", overpaidManagers);
-        printReport("Underpaid Managers", underpaidManagers);
+        printReport("The overpaid managers", overpaidManagers);
+        printReport("The underpaid managers", underpaidManagers);
     }
 
-    private void printReport(String title, Map<Manager, BigDecimal> managers) {
+    void printReport(String title, Map<Manager, BigDecimal> managers) {
         if (!managers.isEmpty()) {
             System.out.println(title);
             System.out.println("------------------------------------");
