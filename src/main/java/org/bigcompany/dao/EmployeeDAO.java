@@ -15,11 +15,12 @@ import java.util.Map;
  * Reads Employee data from a CSV file and builds a map of employees.
  * Each line in the CSV file represents an Employee.
  * The map's keys are Employee IDs, and the values are CompanyStaff objects.
- * <p>
+ *
  * Assumptions:
  * - The CSV file is always available at the given path.
  * - The CSV file is properly formatted with no missing or malformed data.
  * - The CSV file does not contain any duplicate Employee IDs.
+ * - The CSV file will always have header at the top
  * - The managerId field is empty only for one employee record which indicates that employee is a CEO
  *
  * @author Neha B Acharya
@@ -49,7 +50,7 @@ public class EmployeeDAO {
             String line;
             String headerLine = reader.readLine(); // Skips the header
             if (headerLine == null) {
-                throw new IllegalArgumentException("The CSV file has no headers");
+                throw new IllegalArgumentException("The CSV file is empty");
             }
             while ((line = reader.readLine()) != null) {
                 CompanyStaff employee = createEmployeeFromCSVLine(line);
