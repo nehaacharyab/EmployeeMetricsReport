@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class EmployeeService {
     private static final String CSV_FILE_PATH = "src/main/resources/big_company_1000_records.csv";
-    private final EmployeeCSVLoader employeeDAO;
+    private final EmployeeCSVLoader employeeCSVLoader;
     private final SalaryService salaryService;
     private final Map<String, CompanyStaff> employees;
     private Set<String> managerIds;
@@ -26,13 +26,13 @@ public class EmployeeService {
     /**
      * Constructs an EmployeeService with the given EmployeeCSVLoader and SalaryService.
      *
-     * @param employeeDAO
+     * @param employeeCSVLoader
      *         the EmployeeCSVLoader to use for loading employee data
      * @param salaryService
      *         the SalaryService to use for calculating salaries
      */
-    public EmployeeService(EmployeeCSVLoader employeeDAO, SalaryService salaryService) {
-        this.employeeDAO = employeeDAO;
+    public EmployeeService(EmployeeCSVLoader employeeCSVLoader, SalaryService salaryService) {
+        this.employeeCSVLoader = employeeCSVLoader;
         this.salaryService = salaryService;
         this.employees = new HashMap<>();
     }
@@ -68,7 +68,7 @@ public class EmployeeService {
             return new ArrayList<>(employees.values());
         }
         try {
-            Map<String, CompanyStaff> employeeMap = employeeDAO.buildEmployeeMapFromCSV(CSV_FILE_PATH);
+            Map<String, CompanyStaff> employeeMap = employeeCSVLoader.buildEmployeeMapFromCSV(CSV_FILE_PATH);
             managerIds = new HashSet<>();
             for (CompanyStaff employee : employeeMap.values()) {
                 if (isManager(employee.getId(), employeeMap)) {

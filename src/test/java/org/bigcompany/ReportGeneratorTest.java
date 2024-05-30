@@ -21,7 +21,7 @@ import static org.mockito.Mockito.times;
  * @author Neha B Acharya
  */
 class ReportGeneratorTest {
-    private EmployeeCSVLoader employeeDAO;
+    private EmployeeCSVLoader employeeCSVLoader;
     private SalaryService salaryService;
     private EmployeeService employeeService;
 
@@ -30,9 +30,9 @@ class ReportGeneratorTest {
      */
     @BeforeEach
     public void setup() {
-        employeeDAO = Mockito.mock(EmployeeCSVLoader.class);
+        employeeCSVLoader = Mockito.mock(EmployeeCSVLoader.class);
         salaryService = Mockito.mock(SalaryService.class);
-        employeeService = new EmployeeService(employeeDAO, salaryService);
+        employeeService = new EmployeeService(employeeCSVLoader, salaryService);
     }
 
     /**
@@ -53,9 +53,9 @@ class ReportGeneratorTest {
      * generateEmployeeReport method of the EmployeeService class is called.
      */
     @Test
-    void testGenerateEmployeeReport_callsEmployeeDAO() throws IOException {
+    void testGenerateEmployeeReport_callsEmployeeCSVLoader() throws IOException {
         employeeService.generateEmployeeReport();
-        verify(employeeDAO, times(1))
+        verify(employeeCSVLoader, times(1))
                 .buildEmployeeMapFromCSV(anyString());
     }
 }

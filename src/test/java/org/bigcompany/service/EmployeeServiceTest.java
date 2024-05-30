@@ -49,7 +49,7 @@ class EmployeeServiceTest {
     private Manager manager;
 
     @Mock
-    private EmployeeCSVLoader employeeDAO;
+    private EmployeeCSVLoader employeeCSVLoader;
     @Mock
     private SalaryService salaryService;
 
@@ -60,7 +60,7 @@ class EmployeeServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        employeeService = new EmployeeService(employeeDAO, salaryService);
+        employeeService = new EmployeeService(employeeCSVLoader, salaryService);
         System.setOut(new PrintStream(outContent));
         employee = new Employee("1", "John", "Doe", new BigDecimal("5000"), "2");
         manager = new Manager("2", "Jane", "Doe", new BigDecimal("7000"), null);
@@ -162,7 +162,7 @@ class EmployeeServiceTest {
         employeeMap.put("1", employee);
         employeeMap.put("2", manager);
 
-        when(employeeDAO.buildEmployeeMapFromCSV(anyString()))
+        when(employeeCSVLoader.buildEmployeeMapFromCSV(anyString()))
                 .thenReturn(employeeMap);
 
         List<CompanyStaff> result = employeeService.loadAllEmployee();
@@ -188,7 +188,7 @@ class EmployeeServiceTest {
         employeeMap.put("6", new Employee("6", "Blondelle", "Greyson", new BigDecimal(7000), "5"));
         employeeMap.put("7", new Employee("7", "Blondelle", "Greyson", new BigDecimal(7000), "6"));
 
-        when(employeeDAO.buildEmployeeMapFromCSV(anyString())).thenReturn(employeeMap);
+        when(employeeCSVLoader.buildEmployeeMapFromCSV(anyString())).thenReturn(employeeMap);
         employeeService.loadAllEmployee();
 
         List<CompanyStaff> companyStraffList = employeeService.getLongReportingLine();
@@ -207,11 +207,11 @@ class EmployeeServiceTest {
         Map<String, CompanyStaff> employeeMap = Map.of(
                 "1", new Manager("1", "John", "Doe", new BigDecimal("5000"), null),
                 "2", new Manager("2", "Jane", "Doe", new BigDecimal("6000"), "1"));
-        when(employeeDAO.buildEmployeeMapFromCSV(anyString())).thenReturn(employeeMap);
+        when(employeeCSVLoader.buildEmployeeMapFromCSV(anyString())).thenReturn(employeeMap);
         List<CompanyStaff> employees = employeeService.loadAllEmployee();
 
         assertEquals(2, employees.size());
-        verify(employeeDAO, times(1)).buildEmployeeMapFromCSV(anyString());
+        verify(employeeCSVLoader, times(1)).buildEmployeeMapFromCSV(anyString());
     }
 
     /**
@@ -222,7 +222,7 @@ class EmployeeServiceTest {
         Map<String, CompanyStaff> employeeMap = Map.of(
                 "1", new Manager("1", "John", "Doe", new BigDecimal("5000"), null),
                 "2", new Manager("2", "Jane", "Doe", new BigDecimal("6000"), "1"));
-        when(employeeDAO.buildEmployeeMapFromCSV(anyString())).thenReturn(employeeMap);
+        when(employeeCSVLoader.buildEmployeeMapFromCSV(anyString())).thenReturn(employeeMap);
         employeeService.loadAllEmployee();
         int length = employeeService.getReportingLineLength(employee);
 
@@ -247,7 +247,7 @@ class EmployeeServiceTest {
     void testPrintReportShouldPrintCorrectReport() {
         Map<Manager, BigDecimal> managers = Map.of(
                 manager, BigDecimal.valueOf(1000));
-        employeeService = new EmployeeService(employeeDAO, salaryService);
+        employeeService = new EmployeeService(employeeCSVLoader, salaryService);
         employeeService.printPaymentReport("The overpaid managers", managers);
 
         String expectedOutput = """
@@ -268,7 +268,7 @@ class EmployeeServiceTest {
      * @throws IOException If an input or output exception occurred
      */
     private void loadAllEmployeeAndAssertEmpty(String csvFilePath) throws IOException {
-        doThrow(IllegalArgumentException.class).when(employeeDAO)
+        doThrow(IllegalArgumentException.class).when(employeeCSVLoader)
                 .buildEmployeeMapFromCSV(csvFilePath);
         List<CompanyStaff> employeeMapFromCSV = employeeService.loadAllEmployee();
         assertTrue(employeeMapFromCSV.isEmpty());

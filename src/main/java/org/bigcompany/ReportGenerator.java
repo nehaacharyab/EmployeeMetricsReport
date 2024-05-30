@@ -21,9 +21,9 @@ public class ReportGenerator {
      * @param args The command line arguments.
      */
     public static void main(String[] args) {
-        EmployeeCSVLoader employeeDAO = new EmployeeCSVLoader();
+        EmployeeCSVLoader employeeCSVLoader = new EmployeeCSVLoader();
         SalaryService salaryService = new SalaryService();
-        EmployeeService employeeService = new EmployeeService(employeeDAO, salaryService);
+        EmployeeService employeeService = new EmployeeService(employeeCSVLoader, salaryService);
         employeeService.generateEmployeeReport();
     }
 }
