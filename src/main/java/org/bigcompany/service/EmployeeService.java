@@ -14,12 +14,6 @@ import java.util.*;
  * reporting line length for a given employee, retrieving a list of employees with a reporting line length greater than 4,
  * and generating a report of employees with a long reporting line, overpaid managers, and underpaid managers.
  *
- * Assumptions:
- * - The CSV file from which employees are loaded is always correctly formatted and located at the specified path.
- * - The reporting line length for an employee is calculated based on the current state of the employee hierarchy.
- * - The list of employees with a reporting line length greater than 4 is generated based on the current state of the employee hierarchy.
- * - The report generated includes all employees with a long reporting line, overpaid managers, and underpaid managers based on the current state of the employee hierarchy.
- * - The overpaid and underpaid managers are determined based on the rules specified in the SalaryService class.
  * @author Neha B Acharya
  */
 public class EmployeeService {
@@ -44,6 +38,24 @@ public class EmployeeService {
     }
 
     /**
+     * Generates a report of employees with a long reporting line, overpaid managers, and underpaid managers.
+     */
+    public void generateEmployeeReport() {
+        List<CompanyStaff> employeeWithLongReportingLine = getLongReportingLine();
+        Map<Manager, BigDecimal> overpaidManagers = salaryService.getOverpaidManagers(employees);
+        Map<Manager, BigDecimal> underpaidManagers = salaryService.getUnderpaidManagers(employees);
+
+        if (!employeeWithLongReportingLine.isEmpty() || !overpaidManagers.isEmpty() || !underpaidManagers.isEmpty()) {
+            System.out.println("\nEmployee Report:");
+            System.out.println("----------------");
+        }
+
+        printLongReportingLineReport(employeeWithLongReportingLine);
+        printPaymentReport("\nThe overpaid managers", overpaidManagers);
+        printPaymentReport("\nThe underpaid managers", underpaidManagers);
+    }
+
+    /**
      * Loads all employees from a CSV file. If the employees have already been loaded, it returns the already loaded
      * employees. Otherwise, it loads the employees from the CSV file, determines which employees are managers, and
      * assigns subordinates to each manager. If an error occurs while reading the CSV file, an error message is printed
@@ -51,7 +63,7 @@ public class EmployeeService {
      *
      * @return a list of all employees
      */
-    public List<CompanyStaff> loadAllEmployee() {
+    List<CompanyStaff> loadAllEmployee() {
         if (!employees.isEmpty()) {
             return new ArrayList<>(employees.values());
         }
@@ -80,7 +92,7 @@ public class EmployeeService {
      * @param employee the employee for whom to calculate the reporting line length
      * @return the reporting line length of the employee
      */
-    public int getReportingLineLength(CompanyStaff employee) {
+    int getReportingLineLength(CompanyStaff employee) {
         int length = 0;
         while (employee.getManagerId() != null) {
             employee = employees.get(employee.getManagerId());
@@ -94,7 +106,7 @@ public class EmployeeService {
      *
      * @return a list of employees with a long reporting line
      */
-    public List<CompanyStaff> getLongReportingLine() {
+    List<CompanyStaff> getLongReportingLine() {
         return loadAllEmployee().stream()
                 .filter(employee -> {
                     int length = getReportingLineLength(employee);
@@ -104,25 +116,6 @@ public class EmployeeService {
                     }
                     return false;
                 }).toList();
-
-    }
-
-    /**
-     * Generates a report of employees with a long reporting line, overpaid managers, and underpaid managers.
-     */
-    public void generateEmployeeReport() {
-        List<CompanyStaff> employeeWithLongReportingLine = getLongReportingLine();
-        Map<Manager, BigDecimal> overpaidManagers = salaryService.getOverpaidManagers(employees);
-        Map<Manager, BigDecimal> underpaidManagers = salaryService.getUnderpaidManagers(employees);
-
-        if (!employeeWithLongReportingLine.isEmpty() || !overpaidManagers.isEmpty() || !underpaidManagers.isEmpty()) {
-            System.out.println("Employee Report:");
-            System.out.println("----------------");
-        }
-
-        printLongReportingLineReport(employeeWithLongReportingLine);
-        printPaymentReport("The overpaid managers", overpaidManagers);
-        printPaymentReport("The underpaid managers", underpaidManagers);
     }
 
     /**
@@ -148,7 +141,8 @@ public class EmployeeService {
                             " by " +
                             payment));
         } else {
-            System.out.println("There are no " + title.toLowerCase());
+            System.out.println("\nThere are no " + title.toLowerCase());
+            System.out.println("-----------------------------------");
         }
     }
 
@@ -158,7 +152,7 @@ public class EmployeeService {
      * @param employees the list of employees to print
      */
     private void printLongReportingLineReport(List<CompanyStaff> employees) {
-        String title = "Employee with longer reporting line";
+        String title = "\nEmployee with longer reporting line";
         if (!employees.isEmpty()) {
             System.out.println(title);
             System.out.println("------------------------------------");

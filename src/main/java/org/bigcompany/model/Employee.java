@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 
 /**
  * Represents an Employee in the company.
+ * Employee is a regular Company staff and will not have any subordinates
+ *
+ * @author Neha B Acharya
  */
 public class Employee implements CompanyStaff {
     private final String id;
@@ -37,7 +40,7 @@ public class Employee implements CompanyStaff {
      */
     @Override
     public String toString() {
-        return "Employee{" +
+        return "{" +
                 "id='" + id + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

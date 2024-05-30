@@ -6,6 +6,9 @@ import java.util.List;
 
 /**
  * Represents a Manager in the company.
+ * Manager can be mapped to multiple other employees(Subordinates) forming a hierarchy structure
+ *
+ * @author Neha B Acharya
  */
 public class Manager implements CompanyStaff {
     private final String id;
@@ -102,9 +105,9 @@ public class Manager implements CompanyStaff {
     }
 
     /**
-     * Returns the reporting line length of the Manager.
+     * Returns the reporting line length of the Manager up the hierarchy.
      *
-     * @return the reporting line length of the Manager
+     * @return the reporting line length of the Manager up the hierarchy.
      */
     @Override
     public String getReportingLineLength() {

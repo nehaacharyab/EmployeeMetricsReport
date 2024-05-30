@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 
 /**
  * This interface represents a staff member in the company.
- * It provides methods to get and set the properties of a staff member.
+ * It provides methods to get and set the common properties of a company staff member.
+ *
+ * @author Neha B Acharya
  */
 public interface CompanyStaff {
 

@@ -20,12 +20,6 @@ import static java.math.BigDecimal.ZERO;
  * It provides methods to load all employees, determine if an employee is a manager, get the length of an employee's reporting line,
  * get employees with a long reporting line, and generate an employee report.
  *
- * Assumptions:
- * - The CSV file is always available at the given path.
- * - The CSV file is properly formatted with no missing or malformed data.
- * - The CSV file does not contain any duplicate Employee IDs.
- * - The managerId field is empty only for one employee record which indicates that employee is a CEO
- *
  * @author Neha B Acharya
  */
 public class EmployeeCSVLoader {
@@ -40,10 +34,6 @@ public class EmployeeCSVLoader {
      * This method reads a CSV file and builds a map of employees.
      * Each line in the CSV file represents an Employee.
      * The map's keys are Employee IDs, and the values are CompanyStaff objects.
-     * Assumption: The first line of the CSV file is a header and should be skipped.
-     * It also checks if the header is null and throws an exception if it is.
-     * It checks for multiple employees without a manager and throws an exception if found.
-     * It checks for duplicate employee IDs and throws an exception if found.
      *
      * @param csvFilePath The path to the CSV file.
      * @return A map of employees.
@@ -78,12 +68,6 @@ public class EmployeeCSVLoader {
     /**
      * This method takes a line from the CSV file and constructs a CompanyStaff object.
      * It extracts the Employee's ID, first name, last name, salary, and manager ID from the line.
-     * Assumptions:
-     * - Each line in the CSV file has exactly five fields.
-     * - The employee id, first name, last name should not be empty
-     * - The salary field can be parsed as a BigDecimal and should be greater than zero.
-     * - The managerId field can be null only for one employee, indicating that the Employee does not have a manager and
-     *   is a CEO.
      *
      * @param csvLine A line from the CSV file.
      * @return A CompanyStaff object representing the Employee.

@@ -15,28 +15,9 @@ import java.util.stream.Collectors;
  * Provides methods to analyze manager salaries, identify underpaid and overpaid managers,
  * and calculate average subordinate salaries.
  *
- * Assumptions:
- * - The input data is correctly populated and follows the expected structure.
- * - The Manager class implements the getSubordinates() method to retrieve subordinate employees.
- *
  * @author Neha B Acharya
  */
 public class SalaryService {
-
-    /**
-     * Calculates the underpayment or overpayment for a manager based on the average subordinate salary.
-     *
-     * @param manager The manager for whom to calculate the payment.
-     * @param multiplier The multiplier for expected salary calculation.
-     * @return The absolute value of the underpayment or overpayment.
-     */
-    private BigDecimal calculateUnderOrOverPayment(Manager manager, BigDecimal multiplier) {
-        BigDecimal averageSubordinateSalary = calculateAverageSubordinateSalary(manager);
-        BigDecimal expectedSalary = averageSubordinateSalary.multiply(multiplier);
-        BigDecimal managerSalary = manager.getSalary();
-        BigDecimal underOrOverPayment = managerSalary.subtract(expectedSalary).abs();
-        return underOrOverPayment.setScale(2, RoundingMode.HALF_UP);
-    }
 
     /**
      * Retrieves a map of underpaid managers along with their corresponding underpayment amounts.
@@ -65,6 +46,28 @@ public class SalaryService {
     }
 
     /**
+     * Calculates the average salary of subordinates for a manager.
+     *
+     * @param employee The manager whose subordinates' salaries to consider.
+     * @return The average subordinate salary.
+     * @throws IllegalArgumentException If the input employee is not a manager.
+     */
+    BigDecimal calculateAverageSubordinateSalary(CompanyStaff employee) {
+        if (!(employee instanceof Manager manager)) {
+            throw new IllegalArgumentException("CompanyStaff " + employee.getId() + " is not a manager");
+        }
+        List<CompanyStaff> subordinates = manager.getSubordinates();
+        if (subordinates.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal totalSalary = subordinates.stream()
+                .map(CompanyStaff::getSalary)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return totalSalary.divide(BigDecimal.valueOf(subordinates.size()), RoundingMode.HALF_UP);
+    }
+
+    /**
      * Retrieves a map of managers based on a specified salary condition.
      *
      * @param employees The map of all employees.
@@ -85,6 +88,21 @@ public class SalaryService {
     }
 
     /**
+     * Calculates the underpayment or overpayment for a manager based on the average subordinate salary.
+     *
+     * @param manager The manager for whom to calculate the payment.
+     * @param multiplier The multiplier for expected salary calculation.
+     * @return The absolute value of the underpayment or overpayment.
+     */
+    private BigDecimal calculateUnderOrOverPayment(Manager manager, BigDecimal multiplier) {
+        BigDecimal averageSubordinateSalary = calculateAverageSubordinateSalary(manager);
+        BigDecimal expectedSalary = averageSubordinateSalary.multiply(multiplier);
+        BigDecimal managerSalary = manager.getSalary();
+        BigDecimal underOrOverPayment = managerSalary.subtract(expectedSalary).abs();
+        return underOrOverPayment.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /**
      * Checks whether the salary condition is met for a given manager.
      *
      * @param manager The manager to evaluate.
@@ -101,25 +119,4 @@ public class SalaryService {
         return salaryComparator.test(managerSalary, expectedSalary);
     }
 
-    /**
-     * Calculates the average salary of subordinates for a manager.
-     *
-     * @param employee The manager whose subordinates' salaries to consider.
-     * @return The average subordinate salary.
-     * @throws IllegalArgumentException If the input employee is not a manager.
-     */
-    public BigDecimal calculateAverageSubordinateSalary(CompanyStaff employee) {
-        if (!(employee instanceof Manager manager)) {
-            throw new IllegalArgumentException("CompanyStaff " + employee.getId() + " is not a manager");
-        }
-        List<CompanyStaff> subordinates = manager.getSubordinates();
-        if (subordinates.isEmpty()) {
-            return BigDecimal.ZERO;
-        }
-        BigDecimal totalSalary = subordinates.stream()
-                .map(CompanyStaff::getSalary)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        return totalSalary.divide(BigDecimal.valueOf(subordinates.size()), RoundingMode.HALF_UP);
-    }
 }
