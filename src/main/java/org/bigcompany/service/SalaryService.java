@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
  * and calculate average subordinate salaries.
  *
  * Assumptions:
- * - The input data (e.g., CompanyStaff, Manager) is correctly populated and follows the expected structure.</li>
- * - The Manager class implements the getSubordinates() method to retrieve subordinate employees.</li>
+ * - The input data is correctly populated and follows the expected structure.
+ * - The Manager class implements the getSubordinates() method to retrieve subordinate employees.
  *
  * @author Neha B Acharya
  */

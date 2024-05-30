@@ -3,17 +3,20 @@ package org.bigcompany.dao;
 import org.bigcompany.model.CompanyStaff;
 import org.bigcompany.model.Employee;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.nio.file.Files.newBufferedReader;
+import static java.nio.file.Paths.get;
+import static java.math.BigDecimal.ZERO;
 
 
 /**
  * The EmployeeService class provides methods to manage and report on employees.
- * It uses an EmployeeDAO to load employee data from a CSV file, and a SalaryService to calculate salaries.
+ * It uses an EmployeeCSVLoader to load employee data from a CSV file, and a SalaryService to calculate salaries.
  * It provides methods to load all employees, determine if an employee is a manager, get the length of an employee's reporting line,
  * get employees with a long reporting line, and generate an employee report.
  *
@@ -25,7 +28,7 @@ import java.util.Map;
  *
  * @author Neha B Acharya
  */
-public class EmployeeDAO {
+public class EmployeeCSVLoader {
 
     private static final int ID_INDEX = 0;
     private static final int FIRST_NAME_INDEX = 1;
@@ -49,14 +52,14 @@ public class EmployeeDAO {
     public Map<String, CompanyStaff> buildEmployeeMapFromCSV(String csvFilePath) throws IOException {
         Map<String, CompanyStaff> employeeMap = new HashMap<>();
         int ceoCount = 0;
-        try (var reader = Files.newBufferedReader(Paths.get(csvFilePath))) {
+        try (BufferedReader reader = newBufferedReader(get(csvFilePath))) {
             String line;
             String headerLine = reader.readLine(); // Skips the header
             if (headerLine == null) {
                 throw new IllegalArgumentException("The CSV file is empty");
             }
             while ((line = reader.readLine()) != null) {
-                CompanyStaff employee = createEmployeeFromCSVLine(line);
+                CompanyStaff employee = validateAndCreateEmployeeFromCSVLine(line);
                 if (employeeMap.containsKey(employee.getId())) {
                     throw new IllegalArgumentException("Duplicate employee ID: " + employee.getId());
                 }
@@ -85,28 +88,23 @@ public class EmployeeDAO {
      * @param csvLine A line from the CSV file.
      * @return A CompanyStaff object representing the Employee.
      */
-    private static CompanyStaff createEmployeeFromCSVLine(String csvLine) {
+    private static CompanyStaff validateAndCreateEmployeeFromCSVLine(String csvLine) {
         String[] employeeFields = csvLine.split(",");
         if (employeeFields.length < 4 || employeeFields.length > 5) {
             throw new IllegalArgumentException("Incorrect number of fields in line: " + csvLine);
         }
-        var id = employeeFields[ID_INDEX];
-        var firstName = employeeFields[FIRST_NAME_INDEX];
-        var lastName = employeeFields[LAST_NAME_INDEX];
+        String id = employeeFields[ID_INDEX];
+        String firstName = employeeFields[FIRST_NAME_INDEX];
+        String lastName = employeeFields[LAST_NAME_INDEX];
         BigDecimal salary = parseSalary(employeeFields[SALARY_INDEX]);
-        var managerId = employeeFields.length > MANAGER_ID_INDEX && !employeeFields[MANAGER_ID_INDEX].isEmpty()
+        String managerId = employeeFields.length > MANAGER_ID_INDEX && !employeeFields[MANAGER_ID_INDEX].isEmpty()
                 ? employeeFields[MANAGER_ID_INDEX]
                 : null;
         // Additional checks for other fields
         if (id.isEmpty() || firstName.isEmpty() || lastName.isEmpty()) {
             throw new IllegalArgumentException("ID, first name, or last name is empty in line: " + csvLine);
         }
-        return new Employee.Builder()
-                .setId(id)
-                .setFirstName(firstName)
-                .setLastName(lastName)
-                .setSalary(salary)
-                .setManagerId(managerId).build();
+        return new Employee(id, firstName, lastName, salary, managerId);
     }
 
     /**
@@ -120,7 +118,7 @@ public class EmployeeDAO {
     private static BigDecimal parseSalary(String salaryField) {
         try {
             BigDecimal salary = new BigDecimal(salaryField);
-            if (salary.compareTo(BigDecimal.ZERO) <= 0) {
+            if (salary.compareTo(ZERO) <= 0) {
                 throw new IllegalArgumentException("Salary must be greater than zero");
             }
             return salary;
