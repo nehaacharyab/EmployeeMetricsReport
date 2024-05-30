@@ -31,12 +31,8 @@ class EmployeeServiceTest {
     private Employee employee;
     private Manager manager;
 
-
     private EmployeeCSVLoader employeeCSVLoader;
-
     private SalaryService salaryService;
-
-
 
     /**
      * This method is executed before each test. It initializes the mocks and the EmployeeService instance.
@@ -73,8 +69,6 @@ class EmployeeServiceTest {
         employeeCSVLoader = new EmployeeCSVLoaderStub(employeeMap);
         employeeService = new EmployeeService(employeeCSVLoader, salaryService);
 
-
-
         List<CompanyStaff> result = employeeService.loadAllEmployee();
 
         assertEquals(2, result.size());
@@ -101,9 +95,9 @@ class EmployeeServiceTest {
         employeeCSVLoader = new EmployeeCSVLoaderStub(employeeMap);
         employeeService = new EmployeeService(employeeCSVLoader, salaryService);
 
-        List<CompanyStaff> companyStraffList = employeeService.getLongReportingLine();
-        assertEquals(1, companyStraffList.size());
-        assertEquals("5", companyStraffList.getFirst().getReportingLineLength());
+        List<CompanyStaff> companyStaffList = employeeService.getLongReportingLine();
+        assertEquals(1, companyStaffList.size());
+        assertEquals("5", companyStaffList.getFirst().getReportingLineLength());
 
     }
 

@@ -20,7 +20,7 @@ public class EmployeeService {
     private static final String CSV_FILE_PATH = "src/main/resources/big_company_1000_records.csv";
     private final EmployeeCSVLoader employeeCSVLoader;
     private final SalaryService salaryService;
-    private final Map<String, CompanyStaff> employees;
+    private final Map<String, CompanyStaff> employees = new HashMap<>();
     private Set<String> managerIds;
 
     /**
@@ -34,7 +34,6 @@ public class EmployeeService {
     public EmployeeService(EmployeeCSVLoader employeeCSVLoader, SalaryService salaryService) {
         this.employeeCSVLoader = employeeCSVLoader;
         this.salaryService = salaryService;
-        this.employees = new HashMap<>();
     }
 
     /**
@@ -129,17 +128,8 @@ public class EmployeeService {
             System.out.println(title);
             System.out.println("------------------------------------");
             managers.forEach((manager, payment) ->
-                    System.out.println(manager.getFirstName() +
-                            " "
-                            +
-                            manager.getLastName() +
-                            " with ID "
-                            +
-                            manager.getId() +
-                            " is " +
-                            (title.contains("overpaid") ? "overpaid" : "underpaid") +
-                            " by " +
-                            payment));
+                    System.out.printf("%s %s with ID %s is %s by %s%n", manager.getFirstName(),
+                            manager.getLastName(), manager.getId(), title.contains("overpaid") ? "overpaid" : "underpaid", payment));
         } else {
             System.out.println("\nThere are no " + title.toLowerCase());
             System.out.println("-----------------------------------");
@@ -159,14 +149,8 @@ public class EmployeeService {
             employees.stream()
                     .filter(employee -> getReportingLineLength(employee) > 4)
                     .forEach(employee ->
-                            System.out.println(
-                                    employee.getFirstName()+" "+ employee.getLastName() +
-                                    " with ID"
-                                    +
-                                    employee.getId() +
-                                    " has a reporting line of length "
-                                    +
-                                    employee.getReportingLineLength()));
+                            System.out.printf("%s %s with ID %s has a reporting line of length %s%n",
+                                    employee.getFirstName(), employee.getLastName() , employee.getId(), employee.getReportingLineLength())) ;
         } else {
             System.out.println("There are no " + title.toLowerCase());
         }

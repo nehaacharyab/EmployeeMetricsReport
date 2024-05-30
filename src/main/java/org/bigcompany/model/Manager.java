@@ -61,7 +61,7 @@ public class Manager implements CompanyStaff {
      */
     @Override
     public String getId() {
-        return this.id;
+        return id;
     }
 
     /**
@@ -71,7 +71,7 @@ public class Manager implements CompanyStaff {
      */
     @Override
     public String getFirstName() {
-        return this.firstName;
+        return firstName;
     }
 
     /**
@@ -81,7 +81,7 @@ public class Manager implements CompanyStaff {
      */
     @Override
     public String getLastName() {
-        return this.lastName;
+        return lastName;
     }
 
     /**
@@ -91,7 +91,7 @@ public class Manager implements CompanyStaff {
      */
     @Override
     public BigDecimal getSalary() {
-        return this.salary;
+        return salary;
     }
 
     /**
@@ -101,7 +101,7 @@ public class Manager implements CompanyStaff {
      */
     @Override
     public String getManagerId() {
-        return this.managerId;
+        return managerId;
     }
 
     /**
@@ -111,7 +111,7 @@ public class Manager implements CompanyStaff {
      */
     @Override
     public String getReportingLineLength() {
-        return this.reportingLine;
+        return reportingLine;
     }
 
     /**
@@ -131,12 +131,13 @@ public class Manager implements CompanyStaff {
      */
     @Override
     public String toString() {
-        return "{" +
-                "id=" + id +
+        return "Manager{" +
+                "id='" + id + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", salary=" + salary +
-                ", managerId=" + managerId +
+                ", managerId='" + managerId + '\'' +
+                ", reportingLine='" + reportingLine + '\'' +
                 ", subordinates=" + subordinates +
                 '}';
     }

@@ -19,10 +19,10 @@ public class Employee implements CompanyStaff {
     /**
      * Constructs an Employee with the given parameters.
      *
-     * @param id the unique identifier of the employee
+     * @param id        the unique identifier of the employee
      * @param firstName the first name of the employee
-     * @param lastName the last name of the employee
-     * @param salary the salary of the employee
+     * @param lastName  the last name of the employee
+     * @param salary    the salary of the employee
      * @param managerId the unique identifier of the employee's manager
      */
     public Employee(String id, String firstName, String lastName, BigDecimal salary, String managerId) {
@@ -40,7 +40,7 @@ public class Employee implements CompanyStaff {
      */
     @Override
     public String toString() {
-        return "{" +
+        return "Employee{" +
                 "id='" + id + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
@@ -57,7 +57,7 @@ public class Employee implements CompanyStaff {
      */
     @Override
     public String getId() {
-        return this.id;
+        return id;
     }
 
     /**
@@ -67,7 +67,7 @@ public class Employee implements CompanyStaff {
      */
     @Override
     public String getFirstName() {
-        return this.firstName;
+        return firstName;
     }
 
     /**
@@ -77,7 +77,7 @@ public class Employee implements CompanyStaff {
      */
     @Override
     public String getLastName() {
-        return this.lastName;
+        return lastName;
     }
 
     /**
@@ -87,7 +87,7 @@ public class Employee implements CompanyStaff {
      */
     @Override
     public BigDecimal getSalary() {
-        return this.salary;
+        return salary;
     }
 
     /**
@@ -97,7 +97,7 @@ public class Employee implements CompanyStaff {
      */
     @Override
     public String getManagerId() {
-        return this.managerId;
+        return managerId;
     }
 
     /**
@@ -107,7 +107,7 @@ public class Employee implements CompanyStaff {
      */
     @Override
     public String getReportingLineLength() {
-        return this.reportingLineLength;
+        return reportingLineLength;
     }
 
     /**
