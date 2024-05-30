@@ -1,16 +1,24 @@
 # Big Company Model
 
-This project contains the model classes for a company's staff management system. It is written in Java and uses Maven for dependency management.
+This project is a staff metrics analysis system for a large company. 
+It is written in Java and uses Maven for dependency management. 
+The system generates a report of employees 
+- who have a reporting line which is too long and the reporting line length
+- Overpaid managers and the overpayment amount
+- Underpaid managers and the underpaid amount
+
+The outcome of the report is printed to the console.
+
 
 ## Project Structure
 
-The project follows a standard Maven project structure. The main code is located in the `src/main/java` directory.
+The project follows a standard Maven project structure. The main code is located in the src/main/java directory.
 
-The model classes are located in the `org.bigcompany.model` package and include:
+The project is divided into several packages:
 
-- `Employee.java`: Represents an employee in the company.
-- `Manager.java`: Represents a manager in the company. A manager is also an employee, but has additional properties and methods.
-- `CompanyStaff.java`: An interface that both `Employee` and `Manager` classes implement.
+- org.bigcompany.model: Contains the model classes, including Employee.java, Manager.java, and CompanyStaff.java.
+- org.bigcompany.service: Contains service classes like EmployeeService.java that contain the business logic of the application.
+- org.bigcompany.dao: Contains data access object classes like EmployeeCSVLoader.java for reading employee data from CSV files.
 
 ## Assumptions
 
@@ -21,6 +29,12 @@ The model classes are located in the `org.bigcompany.model` package and include:
 - Calculation of reporting line between employee and CEO is done excluding both employee and CEO
 - The CSV file tagged to this project is big_company_1000_records.csv and contains 1000 records in total 
 
+## Dependencies
+
+The project has the following dependencies:
+
+- Java: version 22.0.1
+- Maven: version 3.6.3
 
 ## Getting Started
 
