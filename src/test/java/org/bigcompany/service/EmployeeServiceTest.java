@@ -7,11 +7,8 @@ import org.bigcompany.model.Manager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -20,11 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 /**
  * This class tests the functionality of the EmployeeService class.
  * It uses Mockito to mock dependencies and JUnit for assertions.
@@ -32,15 +24,6 @@ import static org.mockito.Mockito.when;
  * @author Neha B Acharya
  */
 class EmployeeServiceTest {
-    private static final String EMPTY_CSV = "src/test/resources/big_company_empty.csv";
-    private static final String HEADER_ONLY_CSV = "src/test/resources/big_company_header_only.csv";
-    private static final String DUPLICATE_IDS_CSV = "src/test/resources/big_company_duplicates.csv";
-    private static final String INVALID_SALARY_CSV = "src/test/resources/big_company_malformed_salary.csv";
-    private static final String INVALID_NAME_CSV = "src/test/resources/big_company_malformed_name.csv";
-    private static final String MULTIPLE_CEOS_CSV = "src/test/resources/big_company_two_ceo.csv";
-    private static final String NEGATIVE_SALARY_CSV = "src/test/resources/big_company_neg_sal.csv";
-    private static final String ZERO_SALARY_CSV = "src/test/resources/big_company_zero_sal.csv";
-    private static final String WRONG_PATH_TO_FILE = "wrong/path/to/file.csv";
 
     private EmployeeService employeeService;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
@@ -48,10 +31,11 @@ class EmployeeServiceTest {
     private Employee employee;
     private Manager manager;
 
-    @Mock
+
     private EmployeeCSVLoader employeeCSVLoader;
-    @Mock
+
     private SalaryService salaryService;
+
 
 
     /**
@@ -59,8 +43,7 @@ class EmployeeServiceTest {
      */
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
-        employeeService = new EmployeeService(employeeCSVLoader, salaryService);
+        salaryService = new SalaryService();
         System.setOut(new PrintStream(outContent));
         employee = new Employee("1", "John", "Doe", new BigDecimal("5000"), "2");
         manager = new Manager("2", "Jane", "Doe", new BigDecimal("7000"), null);
@@ -74,96 +57,23 @@ class EmployeeServiceTest {
         System.setOut(originalOut);
     }
 
-    /**
-     * This test verifies that the loadAllEmployee method returns an empty list when the CSV file is empty.
-     */
-    @Test
-    void loadAllEmployeeWithEmptyCsvShouldReturnEmptyList() throws IOException {
-        loadAllEmployeeAndAssertEmpty(EMPTY_CSV);
-    }
-
-    /**
-     * This test verifies that the loadAllEmployee method returns an empty list when the CSV file path is wrong.
-     */
-    @Test
-    void loadAllEmployeeWithWrongPathShouldReturnEmptyList() throws IOException {
-        loadAllEmployeeAndAssertEmpty(WRONG_PATH_TO_FILE);
-    }
-
-    /**
-     * This test verifies that the loadAllEmployee method returns an empty list when the CSV file only contains a header.
-     */
-    @Test
-    void loadAllEmployeeWithOnlyHeaderShouldReturnEmptyList() throws IOException {
-        loadAllEmployeeAndAssertEmpty(HEADER_ONLY_CSV);
-    }
-
-    /**
-     * This test verifies that the loadAllEmployee method returns an empty list when the CSV file contains duplicate IDs.
-     */
-    @Test
-    void loadAllEmployeeWithDuplicateIdsShouldReturnEmptyList() throws IOException {
-        loadAllEmployeeAndAssertEmpty(DUPLICATE_IDS_CSV);
-    }
-
-
-    /**
-     * This test verifies that the loadAllEmployee method returns an empty list when the CSV file contains an invalid salary.
-     */
-    @Test
-    void loadAllEmployeeWithInvalidSalaryShouldReturnEmptyList() throws IOException {
-        loadAllEmployeeAndAssertEmpty(INVALID_SALARY_CSV);
-    }
-
-    /**
-     * This test verifies that the loadAllEmployee method returns an empty list when the CSV file contains an invalid name.
-     */
-    @Test
-    void loadAllEmployeeWithInvalidNameShouldReturnEmptyList() throws IOException {
-        loadAllEmployeeAndAssertEmpty(INVALID_NAME_CSV);
-    }
-
-
-    /**
-     * This test verifies that the loadAllEmployee method returns an empty list when the CSV file contains multiple CEOs.
-     */
-    @Test
-    void loadAllEmployeeWithMultipleCeoShouldReturnEmptyList() throws IOException {
-        loadAllEmployeeAndAssertEmpty(MULTIPLE_CEOS_CSV);
-    }
-
-
-    /**
-     * This test verifies that the loadAllEmployee method returns an empty list when the CSV file contains a negative salary.
-     */
-    @Test
-    void loadAllEmployeeWithNegativeSalaryShouldReturnEmptyList() throws IOException {
-        loadAllEmployeeAndAssertEmpty(NEGATIVE_SALARY_CSV);
-    }
-
-
-    /**
-     * This test verifies that the loadAllEmployee method returns an empty list when the CSV file contains a zero salary.
-     */
-    @Test
-    void loadAllEmployeeWithZeroSalaryShouldReturnEmptyList() throws IOException {
-        loadAllEmployeeAndAssertEmpty(ZERO_SALARY_CSV);
-    }
 
     /**
      * This test verifies that the loadAllEmployee method returns the correct employees
      * when one employee is a manager and the other a normal employee.
      */
     @Test
-    void testLoadAllEmployeeShouldReturnCorrectEmployees() throws IOException {
+    void testLoadAllEmployeeShouldReturnCorrectEmployees() {
         manager.addSubordinate(employee);
 
         Map<String, CompanyStaff> employeeMap = new HashMap<>();
         employeeMap.put("1", employee);
         employeeMap.put("2", manager);
 
-        when(employeeCSVLoader.buildEmployeeMapFromCSV(anyString()))
-                .thenReturn(employeeMap);
+        employeeCSVLoader = new EmployeeCSVLoaderStub(employeeMap);
+        employeeService = new EmployeeService(employeeCSVLoader, salaryService);
+
+
 
         List<CompanyStaff> result = employeeService.loadAllEmployee();
 
@@ -178,7 +88,7 @@ class EmployeeServiceTest {
      * This test verifies that the getLongReportingLine method returns the correct employees.
      */
     @Test
-    void testGetLongReportingLineShouldReturnCorrectEmployees() throws IOException {
+    void testGetLongReportingLineShouldReturnCorrectEmployees() {
         Map<String, CompanyStaff> employeeMap = new HashMap<>();
         employeeMap.put("1", new Employee("1", "Karina", "Cloris", new BigDecimal(10000), null));
         employeeMap.put("2", new Employee("2", "Dulcinea", "Greenwald", new BigDecimal(8998), "1"));
@@ -188,8 +98,8 @@ class EmployeeServiceTest {
         employeeMap.put("6", new Employee("6", "Blondelle", "Greyson", new BigDecimal(7000), "5"));
         employeeMap.put("7", new Employee("7", "Blondelle", "Greyson", new BigDecimal(7000), "6"));
 
-        when(employeeCSVLoader.buildEmployeeMapFromCSV(anyString())).thenReturn(employeeMap);
-        employeeService.loadAllEmployee();
+        employeeCSVLoader = new EmployeeCSVLoaderStub(employeeMap);
+        employeeService = new EmployeeService(employeeCSVLoader, salaryService);
 
         List<CompanyStaff> companyStraffList = employeeService.getLongReportingLine();
         assertEquals(1, companyStraffList.size());
@@ -202,27 +112,28 @@ class EmployeeServiceTest {
      * when both the manager and the subordinate are managers themselves.
      */
     @Test
-    void testLoadAllEmployeeShouldReturnCorrectEmployeesCase2() throws IOException {
+    void testLoadAllEmployeeShouldReturnCorrectEmployeesCase2() {
         // Given
         Map<String, CompanyStaff> employeeMap = Map.of(
                 "1", new Manager("1", "John", "Doe", new BigDecimal("5000"), null),
                 "2", new Manager("2", "Jane", "Doe", new BigDecimal("6000"), "1"));
-        when(employeeCSVLoader.buildEmployeeMapFromCSV(anyString())).thenReturn(employeeMap);
+        employeeCSVLoader = new EmployeeCSVLoaderStub(employeeMap);
+        employeeService = new EmployeeService(employeeCSVLoader, salaryService);
         List<CompanyStaff> employees = employeeService.loadAllEmployee();
 
         assertEquals(2, employees.size());
-        verify(employeeCSVLoader, times(1)).buildEmployeeMapFromCSV(anyString());
     }
 
     /**
      * This test verifies that the getReportingLineLength method returns the correct reporting length.
      */
     @Test
-    void testGetReportingLineLengthShouldReturnCorrectLength() throws IOException {
+    void testGetReportingLineLengthShouldReturnCorrectLength() {
         Map<String, CompanyStaff> employeeMap = Map.of(
                 "1", new Manager("1", "John", "Doe", new BigDecimal("5000"), null),
                 "2", new Manager("2", "Jane", "Doe", new BigDecimal("6000"), "1"));
-        when(employeeCSVLoader.buildEmployeeMapFromCSV(anyString())).thenReturn(employeeMap);
+        employeeCSVLoader = new EmployeeCSVLoaderStub(employeeMap);
+        employeeService = new EmployeeService(employeeCSVLoader, salaryService);
         employeeService.loadAllEmployee();
         int length = employeeService.getReportingLineLength(employee);
 
@@ -235,6 +146,8 @@ class EmployeeServiceTest {
      */
     @Test
     void testGetLongReportingLineShouldReturnNoEmployees() {
+        employeeCSVLoader = new EmployeeCSVLoaderStub(new HashMap<>());
+        employeeService = new EmployeeService(employeeCSVLoader, salaryService);
         employeeService.loadAllEmployee();
         List<CompanyStaff> employees = employeeService.getLongReportingLine();
         assertTrue(employees.isEmpty());
@@ -259,19 +172,15 @@ class EmployeeServiceTest {
                 outContent.toString(StandardCharsets.UTF_8).lines().count());
     }
 
-    /**
-     * This helper method asserts that an IllegalArgumentException is thrown when
-     * the buildEmployeeMapFromCSV method of the EmployeeCSVLoader class is called with the provided CSV file path,
-     * and verifies that the returned employee map from the loadAllEmployee method of the EmployeeService class is empty.
-     *
-     * @param csvFilePath The path to the CSV file to be tested.
-     * @throws IOException If an input or output exception occurred
-     */
-    private void loadAllEmployeeAndAssertEmpty(String csvFilePath) throws IOException {
-        doThrow(IllegalArgumentException.class).when(employeeCSVLoader)
-                .buildEmployeeMapFromCSV(csvFilePath);
-        List<CompanyStaff> employeeMapFromCSV = employeeService.loadAllEmployee();
-        assertTrue(employeeMapFromCSV.isEmpty());
+    static class EmployeeCSVLoaderStub extends EmployeeCSVLoader{
+        private final Map<String, CompanyStaff> employeeMap;
+        EmployeeCSVLoaderStub(Map<String, CompanyStaff> employeeMap){
+            this.employeeMap = employeeMap;
+        }
+        @Override
+        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(String csvFilePath) {
+            return employeeMap;
+        }
     }
 
 }

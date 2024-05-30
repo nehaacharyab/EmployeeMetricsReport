@@ -1,18 +1,18 @@
 package org.bigcompany;
 
 import org.bigcompany.dao.EmployeeCSVLoader;
+import org.bigcompany.model.CompanyStaff;
+import org.bigcompany.model.Manager;
 import org.bigcompany.service.EmployeeService;
 import org.bigcompany.service.SalaryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This class is used to test the functionality of the EmployeeService class.
@@ -30,8 +30,6 @@ class ReportGeneratorTest {
      */
     @BeforeEach
     public void setup() {
-        employeeCSVLoader = Mockito.mock(EmployeeCSVLoader.class);
-        salaryService = Mockito.mock(SalaryService.class);
         employeeService = new EmployeeService(employeeCSVLoader, salaryService);
     }
 
@@ -41,11 +39,15 @@ class ReportGeneratorTest {
      */
     @Test
     void testGenerateEmployeeReport_callsSalaryService() {
+        Map<String, CompanyStaff> employeeMap = Map.of(
+                "1", new Manager("1", "John", "Doe", new BigDecimal("5000"), null),
+                "2", new Manager("2", "Jane", "Doe", new BigDecimal("6000"), "1"));
+        SalaryServiceStub salaryService = new SalaryServiceStub();
+        employeeCSVLoader = new EmployeeCSVLoaderStub(employeeMap);
+        employeeService = new EmployeeService(employeeCSVLoader, salaryService);
         employeeService.generateEmployeeReport();
-        verify(salaryService, times(1))
-                .getOverpaidManagers(any());
-        verify(salaryService, times(1))
-                .getUnderpaidManagers(any());
+        assertEquals(1, salaryService.getOverpaidManagersInvocationCount());
+        assertEquals(1, salaryService.getUnderpaidManagersInvocationCount());
     }
 
     /**
@@ -53,9 +55,55 @@ class ReportGeneratorTest {
      * generateEmployeeReport method of the EmployeeService class is called.
      */
     @Test
-    void testGenerateEmployeeReport_callsEmployeeCSVLoader() throws IOException {
+    void testGenerateEmployeeReport_callsEmployeeCSVLoader() {
+        Map<String, CompanyStaff> employeeMap = Map.of(
+                "1", new Manager("1", "John", "Doe", new BigDecimal("5000"), null),
+                "2", new Manager("2", "Jane", "Doe", new BigDecimal("6000"), "1"));
+        EmployeeCSVLoaderStub employeeCSVLoader = new EmployeeCSVLoaderStub(employeeMap);
+        SalaryServiceStub salaryService = new SalaryServiceStub();
+        employeeService = new EmployeeService(employeeCSVLoader, salaryService);
         employeeService.generateEmployeeReport();
-        verify(employeeCSVLoader, times(1))
-                .buildEmployeeMapFromCSV(anyString());
+        assertEquals(1, employeeCSVLoader.buildEmployeeMapFromCSVInvocation());
+    }
+
+    static class EmployeeCSVLoaderStub extends EmployeeCSVLoader{
+        int invocationCount = 0;
+
+        EmployeeCSVLoaderStub(Map<String, CompanyStaff> employeeMap){
+        }
+        @Override
+        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(String csvFilePath) throws IOException {
+            invocationCount++;
+            return Map.of();
+        }
+
+        public int buildEmployeeMapFromCSVInvocation(){
+            return invocationCount;
+        }
+    }
+
+    static class SalaryServiceStub extends SalaryService{
+        private int overpaidInvocationCount = 0;
+        private int underpaidInvocationCount = 0;
+
+        @Override
+        public Map<Manager, BigDecimal> getOverpaidManagers(Map<String, CompanyStaff> employees) {
+            overpaidInvocationCount++;
+            return Map.of();
+        }
+
+        @Override
+        public Map<Manager, BigDecimal> getUnderpaidManagers(Map<String, CompanyStaff> employees) {
+            underpaidInvocationCount++;
+            return Map.of();
+        }
+
+        public int getOverpaidManagersInvocationCount() {
+            return overpaidInvocationCount;
+        }
+
+        public int getUnderpaidManagersInvocationCount() {
+            return underpaidInvocationCount;
+        }
     }
 }
