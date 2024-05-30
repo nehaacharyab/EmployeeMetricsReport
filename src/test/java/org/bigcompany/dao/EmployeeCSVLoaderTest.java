@@ -69,7 +69,7 @@ class EmployeeCSVLoaderTest {
      */
     @Test
     void testBuildEmployeeMapFromCSV_WrongPath_ThrowsException()  {
-        assertExceptionForCSVPath(WRONG_PATH_TO_FILE, IOException.class);
+        assertExceptionForCSVPath(WRONG_PATH_TO_FILE, IOException.class, "wrong\\path\\to\\file.csv");
     }
 
     /**
@@ -77,7 +77,7 @@ class EmployeeCSVLoaderTest {
      */
     @Test
     void testBuildEmployeeMapFromCSV_EmptyCSV_ThrowsException() {
-        assertExceptionForCSVPath(EMPTY_CSV, IllegalArgumentException.class);
+        assertExceptionForCSVPath(EMPTY_CSV, IllegalArgumentException.class, "The CSV file is empty");
     }
 
     /**
@@ -94,7 +94,7 @@ class EmployeeCSVLoaderTest {
      */
     @Test
     void testBuildEmployeeMapFromCSV_DuplicateIds_ThrowsException() {
-        assertExceptionForCSVPath(DUPLICATE_IDS_CSV, IllegalArgumentException.class);
+        assertExceptionForCSVPath(DUPLICATE_IDS_CSV, IllegalArgumentException.class, "Duplicate employee ID");
     }
 
     /**
@@ -102,7 +102,7 @@ class EmployeeCSVLoaderTest {
      */
     @Test
     void testBuildEmployeeMapFromCSV_InvalidSalary_ThrowsException() {
-        assertExceptionForCSVPath(INVALID_SALARY_CSV, IllegalArgumentException.class);
+        assertExceptionForCSVPath(INVALID_SALARY_CSV, IllegalArgumentException.class, "Invalid salary:");
     }
 
     /**
@@ -110,7 +110,7 @@ class EmployeeCSVLoaderTest {
      */
     @Test
     void testBuildEmployeeMapFromCSV_InvalidName_ThrowsException() {
-        assertExceptionForCSVPath(INVALID_NAME_CSV, IllegalArgumentException.class);
+        assertExceptionForCSVPath(INVALID_NAME_CSV, IllegalArgumentException.class, "ID, first name, or last name is empty in line");
     }
 
     /**
@@ -118,7 +118,7 @@ class EmployeeCSVLoaderTest {
      */
     @Test
     void testBuildEmployeeMapFromCSV_MultipleCeos_ThrowsException() {
-        assertExceptionForCSVPath(MULTIPLE_CEOS_CSV, IllegalArgumentException.class);
+        assertExceptionForCSVPath(MULTIPLE_CEOS_CSV, IllegalArgumentException.class, "More than one employee without a manager ID");
     }
 
     /**
@@ -126,7 +126,7 @@ class EmployeeCSVLoaderTest {
      */
     @Test
     void testBuildEmployeeMapFromCSV_NegativeSalary_ThrowsException() {
-        assertExceptionForCSVPath(NEGATIVE_SALARY_CSV, IllegalArgumentException.class);
+        assertExceptionForCSVPath(NEGATIVE_SALARY_CSV, IllegalArgumentException.class, "Salary must be greater than zero");
     }
 
     /**
@@ -134,7 +134,7 @@ class EmployeeCSVLoaderTest {
      */
     @Test
     void testBuildEmployeeMapFromCSV_ZeroSalary_ThrowsException() {
-        assertExceptionForCSVPath(ZERO_SALARY_CSV, IllegalArgumentException.class);
+        assertExceptionForCSVPath(ZERO_SALARY_CSV, IllegalArgumentException.class, "Salary must be greater than zero");
     }
 
     /**
@@ -144,8 +144,10 @@ class EmployeeCSVLoaderTest {
      * @param csvFilePath The path to the CSV file to be tested.
      * @param expectedException The class of the exception expected to be thrown.
      */
-    private void assertExceptionForCSVPath(String csvFilePath, Class<? extends Exception> expectedException) {
-        assertThrows(expectedException, () -> employeeCSVLoader.buildEmployeeMapFromCSV(csvFilePath));
+    private void assertExceptionForCSVPath(String csvFilePath, Class<? extends Exception> expectedException, String expectedMessage) {
+        Exception exception = assertThrows(expectedException,
+                () -> employeeCSVLoader.buildEmployeeMapFromCSV(csvFilePath));
+        assertTrue(exception.getMessage().contains(expectedMessage));
     }
 
 }
