@@ -29,6 +29,9 @@ public class EmployeeCSVLoader {
     private static final int LAST_NAME_INDEX = 2;
     private static final int SALARY_INDEX = 3;
     private static final int MANAGER_ID_INDEX = 4;
+    private static final int MIN_FIELDS = 4;
+    private static final int MAX_FIELDS = 5;
+    private static final int ZERO_SALARY = 0;
 
     /**
      * This method reads a CSV file and builds a map of employees.
@@ -74,7 +77,7 @@ public class EmployeeCSVLoader {
      */
     private static CompanyStaff validateAndCreateEmployeeFromCSVLine(String csvLine) {
         String[] employeeFields = csvLine.split(",");
-        if (employeeFields.length < 4 || employeeFields.length > 5) {
+        if (employeeFields.length < MIN_FIELDS || employeeFields.length > MAX_FIELDS) {
             throw new IllegalArgumentException("Incorrect number of fields in line: " + csvLine);
         }
         String id = employeeFields[ID_INDEX];
@@ -102,7 +105,7 @@ public class EmployeeCSVLoader {
     private static BigDecimal parseSalary(String salaryField) {
         try {
             BigDecimal salary = new BigDecimal(salaryField);
-            if (salary.compareTo(ZERO) <= 0) {
+            if (salary.compareTo(ZERO) <= ZERO_SALARY) {
                 throw new IllegalArgumentException("Salary must be greater than zero");
             }
             return salary;

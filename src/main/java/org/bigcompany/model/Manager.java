@@ -2,6 +2,7 @@ package org.bigcompany.model;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,10 +23,10 @@ public class Manager implements CompanyStaff {
     /**
      * Constructs a Manager with the given parameters.
      *
-     * @param id the unique identifier of the manager
+     * @param id        the unique identifier of the manager
      * @param firstName the first name of the manager
-     * @param lastName the last name of the manager
-     * @param salary the salary of the manager
+     * @param lastName  the last name of the manager
+     * @param salary    the salary of the manager
      * @param managerId the unique identifier of the manager's manager
      */
     public Manager(String id, String firstName, String lastName, BigDecimal salary, String managerId) {
@@ -51,7 +52,7 @@ public class Manager implements CompanyStaff {
      * @return the manager's list of subordinates
      */
     public List<CompanyStaff> getSubordinates() {
-        return subordinates;
+        return Collections.unmodifiableList(subordinates);
     }
 
     /**
@@ -111,7 +112,7 @@ public class Manager implements CompanyStaff {
      */
     @Override
     public String getReportingLineLength() {
-        return reportingLine;
+        return reportingLine == null ? "" : reportingLine;
     }
 
     /**

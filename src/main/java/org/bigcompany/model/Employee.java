@@ -107,7 +107,7 @@ public class Employee implements CompanyStaff {
      */
     @Override
     public String getReportingLineLength() {
-        return reportingLineLength;
+        return reportingLineLength == null ? "" : reportingLineLength;
     }
 
     /**

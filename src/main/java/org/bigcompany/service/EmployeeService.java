@@ -7,6 +7,8 @@ import org.bigcompany.model.Manager;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -17,7 +19,7 @@ import java.util.*;
  * @author Neha B Acharya
  */
 public class EmployeeService {
-    private static final String CSV_FILE_PATH = "src/main/resources/big_company_1000_records.csv";
+    private static final int LONG_REPORTING_LINE_THRESHOLD = 4;
     private final EmployeeCSVLoader employeeCSVLoader;
     private final SalaryService salaryService;
     private final Map<String, CompanyStaff> employees = new HashMap<>();
@@ -26,10 +28,8 @@ public class EmployeeService {
     /**
      * Constructs an EmployeeService with the given EmployeeCSVLoader and SalaryService.
      *
-     * @param employeeCSVLoader
-     *         the EmployeeCSVLoader to use for loading employee data
-     * @param salaryService
-     *         the SalaryService to use for calculating salaries
+     * @param employeeCSVLoader the EmployeeCSVLoader to use for loading employee data
+     * @param salaryService     the SalaryService to use for calculating salaries
      */
     public EmployeeService(EmployeeCSVLoader employeeCSVLoader, SalaryService salaryService) {
         this.employeeCSVLoader = employeeCSVLoader;
@@ -67,7 +67,8 @@ public class EmployeeService {
             return new ArrayList<>(employees.values());
         }
         try {
-            Map<String, CompanyStaff> employeeMap = employeeCSVLoader.buildEmployeeMapFromCSV(CSV_FILE_PATH);
+            Path filePath = Paths.get("src/main/resources/big_company_1000_records.csv");
+            Map<String, CompanyStaff> employeeMap = employeeCSVLoader.buildEmployeeMapFromCSV(String.valueOf(filePath));
             managerIds = new HashSet<>();
             for (CompanyStaff employee : employeeMap.values()) {
                 if (isManager(employee.getId(), employeeMap)) {
@@ -109,7 +110,7 @@ public class EmployeeService {
         return loadAllEmployee().stream()
                 .filter(employee -> {
                     int length = getReportingLineLength(employee);
-                    if (length > 4) {
+                    if (length > LONG_REPORTING_LINE_THRESHOLD) {
                         employee.setReportingLineLength(String.valueOf(length));
                         return true;
                     }
@@ -120,7 +121,7 @@ public class EmployeeService {
     /**
      * Prints a report for a given set of managers and their overpayment or underpayment amounts to the console.
      *
-     * @param title the title of the report
+     * @param title    the title of the report
      * @param managers a map of managers to their overpayment or underpayment amounts
      */
     void printPaymentReport(String title, Map<Manager, BigDecimal> managers) {
@@ -150,7 +151,7 @@ public class EmployeeService {
                     .filter(employee -> getReportingLineLength(employee) > 4)
                     .forEach(employee ->
                             System.out.printf("%s %s with ID %s has a reporting line of length %s%n",
-                                    employee.getFirstName(), employee.getLastName() , employee.getId(), employee.getReportingLineLength())) ;
+                                    employee.getFirstName(), employee.getLastName(), employee.getId(), employee.getReportingLineLength()));
         } else {
             System.out.println("There are no " + title.toLowerCase());
         }
@@ -160,8 +161,7 @@ public class EmployeeService {
      * Assigns subordinates to each manager in the given map of employees. A subordinate is defined as an employee who
      * has the manager as their direct manager.
      *
-     * @param employeeMap
-     *         a map of employees
+     * @param employeeMap a map of employees
      */
     private void assignSubordinates(Map<String, CompanyStaff> employeeMap) {
         for (CompanyStaff employee : employees.values()) {
@@ -180,10 +180,8 @@ public class EmployeeService {
      * not, it checks if any employee has the given ID as their manager. If an employee is found, the ID is added to the
      * managerIds set.
      *
-     * @param employeeId
-     *         the ID of the employee to check
-     * @param employeeMap
-     *         a map of all employees
+     * @param employeeId  the ID of the employee to check
+     * @param employeeMap a map of all employees
      * @return true if the given ID belongs to a manager, false otherwise
      */
     private boolean isManager(String employeeId, Map<String, CompanyStaff> employeeMap) {
