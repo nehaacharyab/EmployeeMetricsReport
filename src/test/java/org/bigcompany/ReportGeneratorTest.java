@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This class is used to test the functionality of the EmployeeService class.
- * It uses Mockito to mock the dependencies of the EmployeeService class.
  *
  * @author Neha B Acharya
  */

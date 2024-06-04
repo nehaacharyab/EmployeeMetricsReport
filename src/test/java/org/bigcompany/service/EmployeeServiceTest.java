@@ -19,7 +19,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 /**
  * This class tests the functionality of the EmployeeService class.
- * It uses Mockito to mock dependencies and JUnit for assertions.
  *
  * @author Neha B Acharya
  */
