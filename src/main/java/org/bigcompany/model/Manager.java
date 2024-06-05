@@ -13,143 +13,86 @@ import java.util.Objects;
  *
  * @author Neha B Acharya
  */
-public final class Manager implements CompanyStaff {
-    private final String id;
-    private final String firstName;
-    private final String lastName;
-    private final BigDecimal salary;
-    private final String managerId;
+public final class Manager  extends Employee {
+
     private final List<CompanyStaff> subordinates;
 
-
     /**
-     * Constructs a Manager with the given ID, first name, last name, salary, manager's ID, and subordinates.
+     * Constructs a Manager with the given parameters.
      *
-     * @param id the unique identifier of the manager
+     * @param id        the unique identifier of the manager
      * @param firstName the first name of the manager
-     * @param lastName the last name of the manager
-     * @param salary the salary of the manager
+     * @param lastName  the last name of the manager
+     * @param salary    the salary of the manager
      * @param managerId the unique identifier of the manager's manager
      * @param subordinates the list of subordinates of the manager
      */
     public Manager(String id, String firstName, String lastName, BigDecimal salary, String managerId, List<CompanyStaff> subordinates) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.salary = salary;
-        this.managerId = managerId;
+        super(id, firstName, lastName, salary, managerId);
         this.subordinates = Collections.unmodifiableList(new ArrayList<>(subordinates));
     }
 
     /**
-     * Returns a Manager with the given subordinates.
+     * Constructs a Manager with the given parameters.
+     *
      * @param subordinates the list of subordinates of the manager
-     * @return a Manager with the given subordinates
      */
     public Manager withSubordinates(List<CompanyStaff> subordinates) {
         return new Manager(this.getId(), this.getFirstName(), this.getLastName(), this.getSalary(), this.getManagerId(), subordinates);
     }
 
-
     /**
-     * Returns the list of subordinates of the manager.
-     * @return the list of subordinates of the manager
-     */
+     * Returns the manager's list of subordinates.
+     *
+     * @return the manager's list of subordinates
+ */
     public List<CompanyStaff> getSubordinates() {
         return Collections.unmodifiableList(subordinates);
     }
 
-
     /**
-     * Returns the unique identifier of the manager.
-     * @return the unique identifier of the manager
-     */
-    @Override
-    public String getId() {
-        return id;
-    }
-
-
-    /**
-     * Returns the first name of the manager.
-     * @return the first name of the manager
-     */
-    @Override
-    public String getFirstName() {
-        return firstName;
-    }
-
-
-    /**
-     * Returns the last name of the manager.
-     * @return the last name of the manager
-     */
-    @Override
-    public String getLastName() {
-        return lastName;
-    }
-
-
-    /**
-     * Returns the salary of the manager.
-     * @return the salary of the manager
-     */
-    @Override
-    public BigDecimal getSalary() {
-        return salary;
-    }
-
-
-    /**
-     * Returns the unique identifier of the manager's manager.
-     * @return the unique identifier of the manager's manager
-     */
-    @Override
-    public String getManagerId() {
-        return managerId;
-    }
-
-    /**
-     * Returns a string representation of the manager.
-     * @return a string representation of the manager
+     * Returns the string representation of the Manager.
+     *
+     * @return the string representation of the Manager
      */
     @Override
     public String toString() {
         return "Manager{" +
-                "id='" + id + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", salary=" + salary +
-                ", managerId='" + managerId + '\'' +
+                "id='" + getId() + '\'' +
+                ", firstName='" + getFirstName() + '\'' +
+                ", lastName='" + getLastName() + '\'' +
+                ", salary=" + getSalary() +
+                ", managerId='" + getManagerId() + '\'' +
                 ", subordinates=" + subordinates +
                 '}';
     }
 
     /**
-     * Checks if the given object is equal to this manager.
-     * @param o the object to compare this Manager against
-     * @return true if the given object represents a Manager equivalent to this manager, false otherwise
+     * Returns the reporting line length of the Manager.
+     *
+     * @return the reporting line length of the Manager
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Manager manager = (Manager) o;
-        return id.equals(manager.id) &&
-               firstName.equals(manager.firstName) &&
-               lastName.equals(manager.lastName) &&
-               salary.equals(manager.salary) &&
-               Objects.equals(managerId, manager.managerId) &&
-               subordinates.equals(manager.subordinates);
+        return getId().equals(manager.getId()) &&
+                getFirstName().equals(manager.getFirstName()) &&
+                getLastName().equals(manager.getLastName()) &&
+                getSalary().equals(manager.getSalary()) &&
+                Objects.equals(getManagerId(), manager.getManagerId()) &&
+                subordinates.equals(manager.subordinates);
     }
 
     /**
-     * Returns a hash code value for the manager.
-     * @return a hash code value for this manager
+     * Returns the hash code of the Manager.
+     *
+     * @return the hash code of the Manager
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, salary, managerId, subordinates);
+        return Objects.hash(getId(), getFirstName(), getLastName(), getSalary(), getManagerId(), subordinates);
     }
 
 }
