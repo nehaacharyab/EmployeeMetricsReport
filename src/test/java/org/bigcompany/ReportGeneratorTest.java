@@ -1,10 +1,12 @@
 package org.bigcompany;
 
-import org.bigcompany.dao.EmployeeCSVLoader;
+import org.bigcompany.dao.impl.EmployeeCSVLoader;
 import org.bigcompany.model.CompanyStaff;
 import org.bigcompany.model.Manager;
-import org.bigcompany.service.EmployeeService;
-import org.bigcompany.service.SalaryService;
+import org.bigcompany.service.ISalaryService;
+import org.bigcompany.service.factory.ServiceFactory;
+import org.bigcompany.service.impl.EmployeeService;
+import org.bigcompany.service.impl.ReportingService;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -27,8 +29,9 @@ class ReportGeneratorTest {
     void testGenerateEmployeeReport_callsSalaryService() {
         SalaryServiceStub salaryServiceStub  = new SalaryServiceStub();
         EmployeeCSVLoaderStub employeeCSVLoader = new EmployeeCSVLoaderStub();
-        EmployeeService employeeService = new EmployeeService(employeeCSVLoader, salaryServiceStub);
-        employeeService.generateEmployeeReport();
+        EmployeeService employeeService = new EmployeeService(employeeCSVLoader);
+        ReportingService reportingService = new ReportingService(employeeService, salaryServiceStub);
+        reportingService.generateEmployeeReport();
         assertEquals(1, salaryServiceStub.getOverpaidManagersInvocationCount());
         assertEquals(1, salaryServiceStub.getUnderpaidManagersInvocationCount());
     }
@@ -41,11 +44,33 @@ class ReportGeneratorTest {
     void testGenerateEmployeeReport_callsEmployeeCSVLoader() {
         EmployeeCSVLoaderStub employeeCSVLoaderStub = new EmployeeCSVLoaderStub();
         SalaryServiceStub salaryServiceStub = new SalaryServiceStub();
-        EmployeeService employeeService = new EmployeeService(employeeCSVLoaderStub, salaryServiceStub);
-        employeeService.generateEmployeeReport();
+        EmployeeService employeeService = new EmployeeService(employeeCSVLoaderStub);
+        ReportingService reportingService = new ReportingService(employeeService, salaryServiceStub);
+        reportingService.generateEmployeeReport();
         assertEquals(1, employeeCSVLoaderStub.buildEmployeeMapFromCSVInvocation());
     }
 
+    /**
+     * This test verifies that the main method of the ReportGenerator class calls the buildEmployeeMapFromCSV method
+     * of the EmployeeCSVLoader class.
+     */
+    @Test
+    void testMainMethod() {
+        EmployeeCSVLoaderStub employeeCSVLoaderStub = new EmployeeCSVLoaderStub();
+        SalaryServiceStub salaryServiceStub = new SalaryServiceStub();
+        EmployeeService employeeService = new EmployeeService(employeeCSVLoaderStub);
+
+        ServiceFactory.setEmployeeService(employeeService);
+        ServiceFactory.setSalaryService(salaryServiceStub);
+
+        ReportGenerator.main(new String[]{});
+
+        assertEquals(1, employeeCSVLoaderStub.buildEmployeeMapFromCSVInvocation());
+    }
+
+    /**
+     * This class is used to test the functionality of the EmployeeCSVLoader class.
+     */
     static class EmployeeCSVLoaderStub extends EmployeeCSVLoader{
         int invocationCount = 0;
 
@@ -60,7 +85,10 @@ class ReportGeneratorTest {
         }
     }
 
-    static class SalaryServiceStub extends SalaryService{
+    /**
+     * This class is used to test the functionality of the SalaryService class.
+     */
+    static class SalaryServiceStub implements ISalaryService{
         private int overpaidInvocationCount = 0;
         private int underpaidInvocationCount = 0;
 
@@ -84,4 +112,5 @@ class ReportGeneratorTest {
             return underpaidInvocationCount;
         }
     }
+
 }

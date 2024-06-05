@@ -3,8 +3,8 @@ package org.bigcompany.model;
 import java.math.BigDecimal;
 
 /**
- * This interface represents a staff member in the company.
- * It provides methods to get and set the common properties of a company staff member.
+ * The CompanyStaff interface represents a staff member in the company.
+ * It provides methods to get the staff member's ID, first name, last name, salary, and manager's ID.
  *
  * @author Neha B Acharya
  */
@@ -44,18 +44,4 @@ public interface CompanyStaff {
      * @return the unique identifier of the staff member's manager
      */
     String getManagerId();
-
-    /**
-     * Returns the reporting line length of the staff member.
-     *
-     * @return the reporting line length of the staff member
-     */
-    String getReportingLineLength();
-
-    /**
-     * Sets the reporting line length of the staff member.
-     *
-     * @param reportingLineLength the reporting line length to set
-     */
-    void setReportingLineLength(String reportingLineLength);
 }

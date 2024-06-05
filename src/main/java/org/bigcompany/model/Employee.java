@@ -1,123 +1,67 @@
 package org.bigcompany.model;
 
 import java.math.BigDecimal;
+import java.util.Objects;
+
+
 
 /**
- * Represents an Employee in the company.
- * Employee is a regular Company staff and will not have any subordinates
+ * The Employee class represents an employee in the company.
+ * It implements the CompanyStaff interface and provides methods to get the employee's ID, first name, last name, salary, and manager's ID.
  *
  * @author Neha B Acharya
+
  */
-public class Employee implements CompanyStaff {
-    private final String id;
-    private final String firstName;
-    private final String lastName;
-    private final BigDecimal salary;
-    private final String managerId;
-    private String reportingLineLength;
+public record Employee(String getId, String getFirstName, String getLastName, BigDecimal getSalary, String getManagerId)
+        implements CompanyStaff {
+
 
     /**
-     * Constructs an Employee with the given parameters.
+     * Returns a string representation of the employee.
      *
-     * @param id        the unique identifier of the employee
-     * @param firstName the first name of the employee
-     * @param lastName  the last name of the employee
-     * @param salary    the salary of the employee
-     * @param managerId the unique identifier of the employee's manager
-     */
-    public Employee(String id, String firstName, String lastName, BigDecimal salary, String managerId) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.salary = salary;
-        this.managerId = managerId;
-    }
-
-    /**
-     * Returns a string representation of the Employee.
-     *
-     * @return a string representation of the Employee
+     * @return a string representation of the employee
      */
     @Override
     public String toString() {
         return "Employee{" +
-                "id='" + id + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", salary=" + salary +
-                ", managerId='" + managerId + '\'' +
-                ", reportingLineLength='" + reportingLineLength + '\'' +
-                '}';
+               "id='" + getId + '\'' +
+               ", firstName='" + getFirstName + '\'' +
+               ", lastName='" + getLastName + '\'' +
+               ", salary=" + getSalary +
+               ", managerId='" + getManagerId + '\'' +
+               '}';
+    }
+
+
+    /**
+     * Checks if the given object is equal to this employee.
+     * The result is true if and only if the argument is not null and is an Employee object that has the same ID, first name, last name, salary, and manager ID as this object.
+     *
+     * @param o the object to compare this Employee against
+     * @return true if the given object represents an Employee equivalent to this employee, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return getId.equals(employee.getId) &&
+               getFirstName.equals(employee.getFirstName) &&
+               getLastName.equals(employee.getLastName) &&
+               getSalary.equals(employee.getSalary) &&
+               Objects.equals(getManagerId, employee.getManagerId);
     }
 
     /**
-     * Returns the unique identifier of the Employee.
+     * Returns a hash code value for the employee.
+     * This method is supported for the benefit of hash tables such as those provided by HashMap.
+     * The hash code is calculated based on the employee's ID, first name, last name, salary, and manager ID.
      *
-     * @return the unique identifier of the Employee
+     * @return a hash code value for this employee
      */
     @Override
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * Returns the first name of the Employee.
-     *
-     * @return the first name of the Employee
-     */
-    @Override
-    public String getFirstName() {
-        return firstName;
-    }
-
-    /**
-     * Returns the last name of the Employee.
-     *
-     * @return the last name of the Employee
-     */
-    @Override
-    public String getLastName() {
-        return lastName;
-    }
-
-    /**
-     * Returns the salary of the Employee.
-     *
-     * @return the salary of the Employee
-     */
-    @Override
-    public BigDecimal getSalary() {
-        return salary;
-    }
-
-    /**
-     * Returns the unique identifier of the Employee's manager.
-     *
-     * @return the unique identifier of the Employee's manager
-     */
-    @Override
-    public String getManagerId() {
-        return managerId;
-    }
-
-    /**
-     * Returns the reporting line length of the Employee.
-     *
-     * @return the reporting line length of the Employee
-     */
-    @Override
-    public String getReportingLineLength() {
-        return reportingLineLength == null ? "" : reportingLineLength;
-    }
-
-    /**
-     * Sets the reporting line length of the Employee.
-     *
-     * @param reportingLineLength the reporting line length to set
-     */
-    @Override
-    public void setReportingLineLength(String reportingLineLength) {
-        this.reportingLineLength = reportingLineLength;
+    public int hashCode() {
+        return Objects.hash(getId, getFirstName, getLastName, getSalary, getManagerId);
     }
 
 }

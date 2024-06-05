@@ -1,10 +1,12 @@
 package org.bigcompany.dao;
 
+import org.bigcompany.dao.impl.EmployeeCSVLoader;
+import org.bigcompany.exception.EmployeeDataException;
+import org.bigcompany.exception.InvalidSalaryException;
 import org.bigcompany.model.CompanyStaff;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -13,8 +15,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * This class contains unit tests for the EmployeeCSVLoader class.
- * It tests the method buildEmployeeMapFromCSV with different CSV files.
+ * This class tests the functionality of the EmployeeCSVLoader class.
  *
  * @author Neha B Acharya
  */
@@ -30,6 +31,7 @@ class EmployeeCSVLoaderTest {
     private static final String MULTIPLE_CEOS_CSV = String.valueOf(Paths.get("src/test/resources/big_company_two_ceo.csv"));
     private static final String NEGATIVE_SALARY_CSV = String.valueOf(Paths.get("src/test/resources/big_company_neg_sal.csv"));
     private static final String ZERO_SALARY_CSV = String.valueOf(Paths.get("src/test/resources/big_company_zero_sal.csv"));
+    private static final String INCORRECT_FIELDS_CSV = String.valueOf(Paths.get("src/test/resources/big_company_incorrect_fields.csv"));
     private static final String WRONG_PATH_TO_FILE = String.valueOf(Paths.get("wrong/path/to/file.csv"));
     private static final String TEST_EMP_ID = "100";
 
@@ -46,11 +48,10 @@ class EmployeeCSVLoaderTest {
     }
 
     /**
-     * This test verifies that the buildEmployeeMapFromCSV method correctly parses a valid CSV file.
-     * It checks that the returned map is not null, not empty, and contains the correct data.
+     * This test verifies that the buildEmployeeMapFromCSV method returns the correct map when given a valid CSV file.
      */
     @Test
-    void testBuildEmployeeMapFromCSV_ValidCSV_ReturnsCorrectMap() throws IOException {
+    void testBuildEmployeeMapFromCSV_ValidCSV_ReturnsCorrectMap() {
         Map<String, CompanyStaff> employeeMap = employeeCSVLoader.buildEmployeeMapFromCSV(VALID_CSV);
         Set<String> setOfEmployeeIds = employeeMap.keySet();
         CompanyStaff companyStaff = employeeMap.get(TEST_EMP_ID);
@@ -66,68 +67,69 @@ class EmployeeCSVLoaderTest {
     }
 
     /**
-     * This test verifies that the buildEmployeeMapFromCSV method throws an IOException when given a wrong file path.
+     * This test verifies that the buildEmployeeMapFromCSV method returns an empty map when given a non-existent CSV file.
      */
     @Test
-    void testBuildEmployeeMapFromCSV_WrongPath_ThrowsException() {
-        assertExceptionForCSVPath(WRONG_PATH_TO_FILE, IOException.class, "wrong\\path\\to\\file.csv");
+    void testBuildEmployeeMapFromCSV_WrongPath_ReturnsEmptyMap() {
+        Map<String, CompanyStaff> employeeMap = employeeCSVLoader.buildEmployeeMapFromCSV(WRONG_PATH_TO_FILE);
+        assertTrue(employeeMap.isEmpty());
     }
 
     /**
-     * This test verifies that the buildEmployeeMapFromCSV method throws an IllegalArgumentException when given an empty CSV file.
+     * This test verifies that the buildEmployeeMapFromCSV method throws an EmployeeDataException when given an empty CSV file.
      */
     @Test
     void testBuildEmployeeMapFromCSV_EmptyCSV_ThrowsException() {
-        assertExceptionForCSVPath(EMPTY_CSV, IllegalArgumentException.class, "The CSV file is empty");
+        assertExceptionForCSVPath(EMPTY_CSV, EmployeeDataException.class, "The CSV file is empty");
     }
 
     /**
      * This test verifies that the buildEmployeeMapFromCSV method returns an empty map when given a CSV file with only a header.
      */
     @Test
-    void testBuildEmployeeMapFromCSV_OnlyHeader_ReturnsEmptyEmployeeMap() throws IOException {
+    void testBuildEmployeeMapFromCSV_OnlyHeader_ReturnsEmptyEmployeeMap() {
         Map<String, CompanyStaff> employeeMapFromCSV = employeeCSVLoader.buildEmployeeMapFromCSV(HEADER_ONLY_CSV);
         assertTrue(employeeMapFromCSV.isEmpty());
     }
 
     /**
-     * This test verifies that the buildEmployeeMapFromCSV method throws an IllegalArgumentException when given a CSV file with duplicate IDs.
+     * This test verifies that the buildEmployeeMapFromCSV method throws an EmployeeDataException when given a CSV file with duplicate IDs.
      */
     @Test
     void testBuildEmployeeMapFromCSV_DuplicateIds_ThrowsException() {
-        assertExceptionForCSVPath(DUPLICATE_IDS_CSV, IllegalArgumentException.class, "Duplicate employee ID");
+        assertExceptionForCSVPath(DUPLICATE_IDS_CSV, EmployeeDataException.class, "Duplicate employee ID");
     }
 
     /**
-     * This test verifies that the buildEmployeeMapFromCSV method throws an IllegalArgumentException when given a CSV file with an invalid salary.
+     * This test verifies that the buildEmployeeMapFromCSV method throws an InvalidSalaryException when given a CSV file with an invalid salary.
      */
     @Test
     void testBuildEmployeeMapFromCSV_InvalidSalary_ThrowsException() {
-        assertExceptionForCSVPath(INVALID_SALARY_CSV, IllegalArgumentException.class, "Invalid salary:");
+        assertExceptionForCSVPath(INVALID_SALARY_CSV, InvalidSalaryException.class, "Invalid salary:");
     }
 
     /**
-     * This test verifies that the buildEmployeeMapFromCSV method throws an IllegalArgumentException when given a CSV file with an invalid name.
+     * This test verifies that the buildEmployeeMapFromCSV method throws an EmployeeDataException when given a CSV file with an invalid name.
      */
     @Test
     void testBuildEmployeeMapFromCSV_InvalidName_ThrowsException() {
-        assertExceptionForCSVPath(INVALID_NAME_CSV, IllegalArgumentException.class, "ID, first name, or last name is empty in line");
+        assertExceptionForCSVPath(INVALID_NAME_CSV, EmployeeDataException.class, "ID, first name, or last name is empty in line");
     }
 
     /**
-     * This test verifies that the buildEmployeeMapFromCSV method throws an IllegalArgumentException when given a CSV file with multiple CEOs.
+     * This test verifies that the buildEmployeeMapFromCSV method throws an EmployeeDataException when given a CSV file with multiple CEOs.
      */
     @Test
     void testBuildEmployeeMapFromCSV_MultipleCeos_ThrowsException() {
-        assertExceptionForCSVPath(MULTIPLE_CEOS_CSV, IllegalArgumentException.class, "More than one employee without a manager ID");
+        assertExceptionForCSVPath(MULTIPLE_CEOS_CSV, EmployeeDataException.class, "More than one employee without a manager ID");
     }
 
-    /**
-     * This test verifies that the buildEmployeeMapFromCSV method throws an IllegalArgumentException when given a CSV file with a negative salary.
+   /**
+     * This test verifies that the buildEmployeeMapFromCSV method throws an InvalidSalaryException when given a CSV file with a negative salary.
      */
     @Test
     void testBuildEmployeeMapFromCSV_NegativeSalary_ThrowsException() {
-        assertExceptionForCSVPath(NEGATIVE_SALARY_CSV, IllegalArgumentException.class, "Salary must be greater than zero");
+        assertExceptionForCSVPath(NEGATIVE_SALARY_CSV, InvalidSalaryException.class, "Salary must be greater than zero");
     }
 
     /**
@@ -135,15 +137,22 @@ class EmployeeCSVLoaderTest {
      */
     @Test
     void testBuildEmployeeMapFromCSV_ZeroSalary_ThrowsException() {
-        assertExceptionForCSVPath(ZERO_SALARY_CSV, IllegalArgumentException.class, "Salary must be greater than zero");
+        assertExceptionForCSVPath(ZERO_SALARY_CSV, InvalidSalaryException.class, "Salary must be greater than zero");
     }
 
     /**
-     * This helper method asserts that an exception of the expected type is thrown when
-     * the buildEmployeeMapFromCSV method of the EmployeeCSVLoader class is called with the provided CSV file path.
-     *
-     * @param csvFilePath       The path to the CSV file to be tested.
-     * @param expectedException The class of the exception expected to be thrown.
+     * This test verifies that the buildEmployeeMapFromCSV method throws an EmployeeDataException when given a CSV file with incorrect fields.
+     */
+    @Test
+    void testBuildEmployeeMapFromCSV_IncorrectFields_ThrowsException() {
+        assertExceptionForCSVPath(INCORRECT_FIELDS_CSV, EmployeeDataException.class, "Incorrect number of fields in line: 101,Dulcinea,Greenwald,8998,107,89989");
+    }
+
+    /**
+     * This method asserts that the buildEmployeeMapFromCSV method throws the expected exception with the expected message
+     * @param csvFilePath
+     * @param expectedException
+     * @param expectedMessage
      */
     private void assertExceptionForCSVPath(String csvFilePath, Class<? extends Exception> expectedException, String expectedMessage) {
         Exception exception = assertThrows(expectedException,
