@@ -21,6 +21,8 @@ public class EmployeeService implements IEmployeeService {
     private final IEmployeeCSVLoader employeeCSVLoader;
     private Set<String> managerIds;
 
+    private static final String CSV_FILE_PATH = "src/main/resources/big_company_1000_records.csv";
+
     /**
      * Constructs an EmployeeService with the given EmployeeCSVLoader.
      * @param employeeCSVLoader The loader to use for loading employee data from a CSV file.
@@ -37,7 +39,7 @@ public class EmployeeService implements IEmployeeService {
      */
     public Map<String, CompanyStaff> loadAllEmployee() {
         Map<String, CompanyStaff> employees = new HashMap<>();
-        Path filePath = Paths.get("src/main/resources/big_company_1000_records.csv");
+        Path filePath = Paths.get(CSV_FILE_PATH);
         Map<String, CompanyStaff> employeeMap = employeeCSVLoader.buildEmployeeMapFromCSV(String.valueOf(filePath));
         managerIds = new HashSet<>();
         Map<String, List<CompanyStaff>> managerToSubordinates = new HashMap<>();
