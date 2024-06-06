@@ -5,7 +5,6 @@ import org.bigcompany.model.CompanyStaff;
 import org.bigcompany.model.Employee;
 import org.bigcompany.model.Manager;
 import org.bigcompany.service.impl.EmployeeService;
-import org.bigcompany.service.impl.ReportingService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,6 @@ class EmployeeServiceTest {
     private Employee employee;
     private Manager manager;
     private EmployeeCSVLoader employeeCSVLoader;
-    private ReportingService reportingService;
 
     /**
      * This method is executed before each test. It initializes the mocks and the EmployeeService instance.
