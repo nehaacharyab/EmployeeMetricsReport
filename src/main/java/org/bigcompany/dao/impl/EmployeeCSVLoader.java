@@ -79,14 +79,14 @@ public class EmployeeCSVLoader implements IEmployeeCSVLoader {
 
     /**
      * This method takes a line from the CSV file and constructs a CompanyStaff object.
+     * It extracts the Employee's ID, first name, last name, salary, and manager ID from the line.
+     *
      * @param csvLine A line from the CSV file.
      * @return A CompanyStaff object representing the Employee.
      */
     private static CompanyStaff validateAndCreateEmployeeFromCSVLine(String csvLine) {
         String[] employeeFields = csvLine.split(",");
-        if (employeeFields.length < MIN_CSV_FIELDS || employeeFields.length > MAX_CSV_FIELDS) {
-            throw new EmployeeDataException("Incorrect number of fields in line: " + csvLine);
-        }
+        validateEmployeeFields(employeeFields);
         String id = employeeFields[ID_INDEX];
         String firstName = employeeFields[FIRST_NAME_INDEX];
         String lastName = employeeFields[LAST_NAME_INDEX];
@@ -94,10 +94,20 @@ public class EmployeeCSVLoader implements IEmployeeCSVLoader {
         String managerId = employeeFields.length > MANAGER_ID_INDEX && !employeeFields[MANAGER_ID_INDEX].isEmpty()
                 ? employeeFields[MANAGER_ID_INDEX]
                 : null;
-        if (id.isEmpty() || firstName.isEmpty() || lastName.isEmpty()) {
-            throw new EmployeeDataException("ID, first name, or last name is empty in line: " + csvLine);
-        }
         return new Employee(id, firstName, lastName, salary, managerId);
+    }
+
+    /**
+     * Validates the fields of an employee from the CSV file.
+     * @param employeeFields The fields of an employee from the CSV file.
+     */
+    private static void validateEmployeeFields(String[] employeeFields) {
+        if (employeeFields.length < MIN_CSV_FIELDS || employeeFields.length > MAX_CSV_FIELDS) {
+            throw new EmployeeDataException("Incorrect number of fields in line: " + String.join(",", employeeFields));
+        }
+        if (employeeFields[ID_INDEX].isEmpty() || employeeFields[FIRST_NAME_INDEX].isEmpty() || employeeFields[LAST_NAME_INDEX].isEmpty()) {
+            throw new EmployeeDataException("ID, first name, or last name is empty in line: " + String.join(",", employeeFields));
+        }
     }
 
     /**

@@ -34,8 +34,7 @@ public class SalaryService implements ISalaryService {
      */
     public Map<Manager, BigDecimal> getUnderpaidManagers(Map<String, CompanyStaff> employees) {
         return getManagersBySalaryCondition(employees, UNDERPAID_MULTIPLIER,
-                                            (managerSalary, expectedSalary) -> managerSalary.compareTo(expectedSalary) <
-                                                                               0,
+                                            (managerSalary, expectedSalary) -> managerSalary.compareTo(expectedSalary) < 0,
                                             UNDERPAID_MULTIPLIER);
     }
 
@@ -47,8 +46,7 @@ public class SalaryService implements ISalaryService {
     public Map<Manager, BigDecimal> getOverpaidManagers(Map<String, CompanyStaff> employees) {
         return getManagersBySalaryCondition(employees,
                                             OVERPAID_MULTIPLIER,
-                                            (managerSalary, expectedSalary) -> expectedSalary.compareTo(managerSalary) <
-                                                                               0,
+                                            (managerSalary, expectedSalary) -> expectedSalary.compareTo(managerSalary) < 0,
                                             OVERPAID_MULTIPLIER);
     }
 
@@ -58,25 +56,20 @@ public class SalaryService implements ISalaryService {
      * @return The average subordinate salary for the given employee.
      */
     BigDecimal calculateAverageSubordinateSalary(CompanyStaff employee) {
-        try {
-            if (!(employee instanceof Manager manager)) {
-                throw new EmployeeDataException("CompanyStaff " + employee.getId() + " is not a manager");
-            }
-            List<CompanyStaff> subordinates = manager.getSubordinates();
-            if (subordinates.isEmpty()) {
-                return BigDecimal.ZERO;
-            }
-            BigDecimal totalSalary = subordinates.stream()
-                                                 .map(CompanyStaff::getSalary)
-                                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-            if (totalSalary.compareTo(BigDecimal.ZERO) <= 0) {
-                throw new InvalidSalaryException("Total salary of subordinates is zero or negative");
-            }
-            return totalSalary.divide(BigDecimal.valueOf(subordinates.size()), RoundingMode.HALF_UP);
-        } catch (EmployeeDataException | InvalidSalaryException e) {
-            System.err.println(e.getMessage());
+        if (!(employee instanceof Manager manager)) {
+            throw new EmployeeDataException("CompanyStaff " + employee.getId() + " is not a manager");
+        }
+        List<CompanyStaff> subordinates = manager.getSubordinates();
+        if (subordinates.isEmpty()) {
             return BigDecimal.ZERO;
         }
+        BigDecimal totalSalary = subordinates.stream()
+                .map(CompanyStaff::getSalary)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (totalSalary.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidSalaryException("Total salary of subordinates is zero or negative");
+        }
+        return totalSalary.divide(BigDecimal.valueOf(subordinates.size()), RoundingMode.HALF_UP);
     }
 
     /**

@@ -55,9 +55,8 @@ public class EmployeeService implements IEmployeeService {
 
         // Then, assign subordinates to each Manager
         for (CompanyStaff employee : employees.values()) {
-            if (employee.getManagerId() != null) {
-                managerToSubordinates.get(employee.getManagerId()).add(employee);
-            }
+            Optional.ofNullable(employee.getManagerId())
+                    .ifPresent(managerId -> managerToSubordinates.get(managerId).add(employee));
         }
         // Finally, create new Manager objects with the correct subordinates
         for (Map.Entry<String, List<CompanyStaff>> entry : managerToSubordinates.entrySet()) {
