@@ -1,6 +1,7 @@
 package org.bigcompany;
 
 import org.bigcompany.dao.impl.EmployeeCSVLoader;
+import org.bigcompany.exception.EmployeeDataException;
 import org.bigcompany.model.CompanyStaff;
 import org.bigcompany.model.Manager;
 import org.bigcompany.service.ISalaryService;
@@ -9,10 +10,12 @@ import org.bigcompany.service.impl.EmployeeService;
 import org.bigcompany.service.impl.ReportingService;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * This class is used to test the functionality of the EmployeeService class.
@@ -48,6 +51,44 @@ class ReportGeneratorTest {
         ReportingService reportingService = new ReportingService(employeeService, salaryServiceStub);
         reportingService.generateEmployeeReport();
         assertEquals(1, employeeCSVLoaderStub.buildEmployeeMapFromCSVInvocation());
+    }
+
+    /**
+     * This test verifies if the generateEmployeeReport method of the EmployeeService class is called and, it logs desired error message
+     * when an EmployeeDataException is encountered.
+     */
+    @Test
+    void testGenerateEmployeeReport_callsEmployeeCSVLoader_EncountersEmployeeDataException() {
+        EmployeeCSVLoaderStubForEmployeeDataException employeeCSVLoaderStub = new EmployeeCSVLoaderStubForEmployeeDataException();
+        SalaryServiceStub salaryServiceStub = new SalaryServiceStub();
+        EmployeeService employeeService = new EmployeeService(employeeCSVLoaderStub);
+
+        ServiceFactory.setEmployeeService(employeeService);
+        ServiceFactory.setSalaryService(salaryServiceStub);
+
+        ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(errContent));
+        ReportGenerator.main(new String[]{});
+        assertTrue(errContent.toString().contains("An error occurred while loading employee data: The CSV file is empty"));
+    }
+
+    /**
+     * This test verifies if the generateEmployeeReport method of the EmployeeService class is called and, it logs desired error message
+     * when an RuntimeException is encountered.
+     */
+    @Test
+    void testGenerateEmployeeReport_callsEmployeeCSVLoader_EncountersException() {
+        EmployeeCSVLoaderStubForException employeeCSVLoaderStub = new EmployeeCSVLoaderStubForException();
+        SalaryServiceStub salaryServiceStub = new SalaryServiceStub();
+        EmployeeService employeeService = new EmployeeService(employeeCSVLoaderStub);
+
+        ServiceFactory.setEmployeeService(employeeService);
+        ServiceFactory.setSalaryService(salaryServiceStub);
+
+        ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(errContent));
+        ReportGenerator.main(new String[]{});
+        assertTrue(errContent.toString().contains("An unexpected error occurred: "));
     }
 
     /**
@@ -110,6 +151,28 @@ class ReportGeneratorTest {
 
         public int getUnderpaidManagersInvocationCount() {
             return underpaidInvocationCount;
+        }
+    }
+
+    /**
+     * This test verifies that the main method of the ReportGenerator class calls the generateEmployeeReport method
+     * of the ReportingService class.
+     */
+    static class EmployeeCSVLoaderStubForEmployeeDataException extends EmployeeCSVLoader{
+        @Override
+        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(String csvFilePath) {
+            throw new EmployeeDataException("The CSV file is empty");
+        }
+    }
+
+    /**
+     * This test verifies that the main method of the ReportGenerator class calls the generateEmployeeReport method
+     * when an RuntimeException is encountered.
+     */
+    static class EmployeeCSVLoaderStubForException extends EmployeeCSVLoader{
+        @Override
+        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(String csvFilePath) {
+            throw new RuntimeException("Error reading employee data from the CSV file");
         }
     }
 
