@@ -10,11 +10,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.nio.file.Files.newBufferedReader;
-import static java.nio.file.Paths.get;
 import static java.math.BigDecimal.ZERO;
 
 /**
@@ -47,10 +47,10 @@ public class EmployeeCSVLoader implements IEmployeeCSVLoader {
      * @return A map of employees, keyed by their unique identifiers.
      * @throws EmployeeDataException If there is an error reading employee data from the CSV file.
      */
-    public Map<String, CompanyStaff> buildEmployeeMapFromCSV(String csvFilePath) throws EmployeeDataException{
+    public Map<String, CompanyStaff> buildEmployeeMapFromCSV(Path csvFilePath) throws EmployeeDataException{
         Map<String, CompanyStaff> employeeMap = new HashMap<>();
         int ceoCount = 0;
-        try (BufferedReader reader = newBufferedReader(get(csvFilePath))) {
+        try (BufferedReader reader = newBufferedReader(csvFilePath)) {
             String line;
             String headerLine = reader.readLine(); // Skips the header
             if (headerLine == null) {

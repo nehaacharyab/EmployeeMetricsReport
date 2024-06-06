@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,7 +105,7 @@ class EmployeeServiceTest {
         }
 
         @Override
-        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(String csvFilePath) {
+        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(Path csvFilePath) {
             return employeeMap;
         }
     }

@@ -40,7 +40,7 @@ public class EmployeeService implements IEmployeeService {
     public Map<String, CompanyStaff> loadAllEmployee() {
         Map<String, CompanyStaff> employees = new HashMap<>();
         Path filePath = Paths.get(CSV_FILE_PATH);
-        Map<String, CompanyStaff> employeeMap = employeeCSVLoader.buildEmployeeMapFromCSV(String.valueOf(filePath));
+        Map<String, CompanyStaff> employeeMap = employeeCSVLoader.buildEmployeeMapFromCSV(filePath);
         managerIds = new HashSet<>();
         Map<String, List<CompanyStaff>> managerToSubordinates = new HashMap<>();
         for (CompanyStaff employee : employeeMap.values()) {

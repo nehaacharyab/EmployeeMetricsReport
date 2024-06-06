@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -116,7 +117,7 @@ class ReportGeneratorTest {
         int invocationCount = 0;
 
         @Override
-        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(String csvFilePath) {
+        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(Path csvFilePath) {
             invocationCount++;
             return Map.of();
         }
@@ -160,7 +161,7 @@ class ReportGeneratorTest {
      */
     static class EmployeeCSVLoaderStubForEmployeeDataException extends EmployeeCSVLoader{
         @Override
-        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(String csvFilePath) {
+        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(Path csvFilePath) {
             throw new EmployeeDataException("The CSV file is empty");
         }
     }
@@ -171,7 +172,7 @@ class ReportGeneratorTest {
      */
     static class EmployeeCSVLoaderStubForException extends EmployeeCSVLoader{
         @Override
-        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(String csvFilePath) {
+        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(Path csvFilePath) {
             throw new RuntimeException("Error reading employee data from the CSV file");
         }
     }

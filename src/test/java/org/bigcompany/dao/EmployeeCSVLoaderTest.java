@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
@@ -22,17 +23,17 @@ import static org.junit.jupiter.api.Assertions.*;
 class EmployeeCSVLoaderTest {
 
     // Paths to various test CSV files
-    private static final String VALID_CSV = String.valueOf(Paths.get("src/test/resources/big_company_valid.csv"));
-    private static final String EMPTY_CSV = String.valueOf(Paths.get("src/test/resources/big_company_empty.csv"));
-    private static final String HEADER_ONLY_CSV = String.valueOf(Paths.get("src/test/resources/big_company_header_only.csv"));
-    private static final String DUPLICATE_IDS_CSV = String.valueOf(Paths.get("src/test/resources/big_company_duplicates.csv"));
-    private static final String INVALID_SALARY_CSV = String.valueOf(Paths.get("src/test/resources/big_company_malformed_salary.csv"));
-    private static final String INVALID_NAME_CSV = String.valueOf(Paths.get("src/test/resources/big_company_malformed_name.csv"));
-    private static final String MULTIPLE_CEOS_CSV = String.valueOf(Paths.get("src/test/resources/big_company_two_ceo.csv"));
-    private static final String NEGATIVE_SALARY_CSV = String.valueOf(Paths.get("src/test/resources/big_company_neg_sal.csv"));
-    private static final String ZERO_SALARY_CSV = String.valueOf(Paths.get("src/test/resources/big_company_zero_sal.csv"));
-    private static final String INCORRECT_FIELDS_CSV = String.valueOf(Paths.get("src/test/resources/big_company_incorrect_fields.csv"));
-    private static final String WRONG_PATH_TO_FILE = String.valueOf(Paths.get("wrong/path/to/file.csv"));
+    private static final Path VALID_CSV = Paths.get("src/test/resources/big_company_valid.csv");
+    private static final Path EMPTY_CSV = Paths.get("src/test/resources/big_company_empty.csv");
+    private static final Path HEADER_ONLY_CSV = Paths.get("src/test/resources/big_company_header_only.csv");
+    private static final Path DUPLICATE_IDS_CSV = Paths.get("src/test/resources/big_company_duplicates.csv");
+    private static final Path INVALID_SALARY_CSV = Paths.get("src/test/resources/big_company_malformed_salary.csv");
+    private static final Path INVALID_NAME_CSV = Paths.get("src/test/resources/big_company_malformed_name.csv");
+    private static final Path MULTIPLE_CEOS_CSV = Paths.get("src/test/resources/big_company_two_ceo.csv");
+    private static final Path NEGATIVE_SALARY_CSV = Paths.get("src/test/resources/big_company_neg_sal.csv");
+    private static final Path ZERO_SALARY_CSV = Paths.get("src/test/resources/big_company_zero_sal.csv");
+    private static final Path INCORRECT_FIELDS_CSV = Paths.get("src/test/resources/big_company_incorrect_fields.csv");
+    private static final Path WRONG_PATH_TO_FILE = Paths.get("wrong/path/to/file.csv");
     private static final String TEST_EMP_ID = "100";
 
     // Instance of the class under test
@@ -148,13 +149,10 @@ class EmployeeCSVLoaderTest {
         assertExceptionForCSVPath(INCORRECT_FIELDS_CSV, EmployeeDataException.class, "Incorrect number of fields in line: 101,Dulcinea,Greenwald,8998,107,89989");
     }
 
-    /**
-     * This method asserts that the buildEmployeeMapFromCSV method throws the expected exception with the expected message
-     * @param csvFilePath
-     * @param expectedException
-     * @param expectedMessage
+   /**
+     * This test verifies that the buildEmployeeMapFromCSV method throws an EmployeeDataException when given a CSV file with an invalid path.
      */
-    private void assertExceptionForCSVPath(String csvFilePath, Class<? extends Exception> expectedException, String expectedMessage) {
+    private void assertExceptionForCSVPath(Path csvFilePath, Class<? extends Exception> expectedException, String expectedMessage) {
         Exception exception = assertThrows(expectedException,
                 () -> employeeCSVLoader.buildEmployeeMapFromCSV(csvFilePath));
         assertTrue(exception.getMessage().contains(expectedMessage));

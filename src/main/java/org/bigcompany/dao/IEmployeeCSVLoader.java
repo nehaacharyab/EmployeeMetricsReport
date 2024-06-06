@@ -3,6 +3,7 @@ package org.bigcompany.dao;
 import org.bigcompany.exception.EmployeeDataException;
 import org.bigcompany.model.CompanyStaff;
 
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -23,5 +24,5 @@ public interface IEmployeeCSVLoader {
      * @return A map of employees, keyed by their unique identifiers.
      * @throws EmployeeDataException If there is an error reading employee data from the CSV file.
      */
-    Map<String, CompanyStaff> buildEmployeeMapFromCSV(String csvFilePath) throws EmployeeDataException;
+    Map<String, CompanyStaff> buildEmployeeMapFromCSV(Path csvFilePath) throws EmployeeDataException;
 }
