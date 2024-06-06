@@ -1,6 +1,7 @@
 package org.bigcompany;
 
 import org.bigcompany.exception.EmployeeDataException;
+import org.bigcompany.exception.InvalidSalaryException;
 import org.bigcompany.service.IEmployeeService;
 import org.bigcompany.service.IReportingService;
 import org.bigcompany.service.ISalaryService;
@@ -28,6 +29,9 @@ public class ReportGenerator {
             ISalaryService salaryService = ServiceFactory.createSalaryService();
             IReportingService reportingService = new ReportingService(employeeService, salaryService);
             reportingService.generateEmployeeReport();
+        } catch (InvalidSalaryException e) {
+            System.err.println("An error occurred while calculating employee salary: " + e.getMessage());
+            e.printStackTrace();
         } catch (EmployeeDataException e) {
             System.err.println("An error occurred while loading employee data: " + e.getMessage());
             e.printStackTrace();

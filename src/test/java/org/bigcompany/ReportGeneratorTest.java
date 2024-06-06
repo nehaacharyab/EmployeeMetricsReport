@@ -2,6 +2,7 @@ package org.bigcompany;
 
 import org.bigcompany.dao.impl.EmployeeCSVLoader;
 import org.bigcompany.exception.EmployeeDataException;
+import org.bigcompany.exception.InvalidSalaryException;
 import org.bigcompany.model.CompanyStaff;
 import org.bigcompany.model.Manager;
 import org.bigcompany.service.ISalaryService;
@@ -92,6 +93,21 @@ class ReportGeneratorTest {
         assertTrue(errContent.toString().contains("An unexpected error occurred: "));
     }
 
+    @Test
+    void testGenerateEmployeeReport_callsEmployeeCSVLoader_EncountersInvalidSalaryException() {
+        EmployeeCSVLoaderStubForInvalidSalaryException employeeCSVLoaderStub = new EmployeeCSVLoaderStubForInvalidSalaryException();
+        SalaryServiceStub salaryServiceStub = new SalaryServiceStub();
+        EmployeeService employeeService = new EmployeeService(employeeCSVLoaderStub);
+
+        ServiceFactory.setEmployeeService(employeeService);
+        ServiceFactory.setSalaryService(salaryServiceStub);
+
+        ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(errContent));
+        ReportGenerator.main(new String[]{});
+        assertTrue(errContent.toString().contains("An error occurred while calculating employee salary: "));
+    }
+
     /**
      * This test verifies that the main method of the ReportGenerator class calls the buildEmployeeMapFromCSV method
      * of the EmployeeCSVLoader class.
@@ -174,6 +190,17 @@ class ReportGeneratorTest {
         @Override
         public Map<String, CompanyStaff> buildEmployeeMapFromCSV(Path csvFilePath) {
             throw new RuntimeException("Error reading employee data from the CSV file");
+        }
+    }
+
+    /**
+     * This test verifies that the main method of the ReportGenerator class calls the generateEmployeeReport method
+     * when an InvalidSalaryException is encountered.
+     */
+    static class EmployeeCSVLoaderStubForInvalidSalaryException extends EmployeeCSVLoader{
+        @Override
+        public Map<String, CompanyStaff> buildEmployeeMapFromCSV(Path csvFilePath) {
+            throw new InvalidSalaryException("An error occurred while calculating employee salary: ");
         }
     }
 
