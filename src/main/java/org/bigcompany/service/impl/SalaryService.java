@@ -79,7 +79,14 @@ public class SalaryService implements ISalaryService {
         }
     }
 
-
+    /**
+     * Gets the managers based on a specified salary condition.
+     * @param employees A map of all employees, keyed by their unique identifiers.
+     * @param multiplier The multiplier to calculate the expected salary.
+     * @param salaryComparator The salary comparator to check if the salary meets the condition.
+     * @param underOrOverPaymentMultiplier The multiplier to calculate the underpayment or overpayment amount.
+     * @return A map of managers and their underpayment or overpayment amounts.
+     */
     private Map<Manager, BigDecimal> getManagersBySalaryCondition(Map<String, CompanyStaff> employees,
                                                                   BigDecimal multiplier,
                                                                   BiPredicate<BigDecimal, BigDecimal> salaryComparator,
@@ -93,7 +100,12 @@ public class SalaryService implements ISalaryService {
                                                                                          underOrOverPaymentMultiplier)));
     }
 
-
+    /**
+     * Calculates the underpayment or overpayment amount for a given manager.
+     * @param manager The manager to calculate the underpayment or overpayment amount for.
+     * @param multiplier The multiplier to calculate the underpayment or overpayment amount.
+     * @return The underpayment or overpayment amount for the given manager.
+     */
     private BigDecimal calculateUnderOrOverPayment(Manager manager, BigDecimal multiplier) {
         BigDecimal averageSubordinateSalary = calculateAverageSubordinateSalary(manager);
         BigDecimal expectedSalary = averageSubordinateSalary.multiply(multiplier);
@@ -102,7 +114,12 @@ public class SalaryService implements ISalaryService {
         return underOrOverPayment.setScale(SCALE, RoundingMode.HALF_UP);
     }
 
-
+    /** Checks if the salary condition is met for a given manager.
+     * @param manager The manager to check the salary condition for.
+     * @param multiplier The multiplier to calculate the expected salary.
+     * @param salaryComparator The salary comparator to check if the salary meets the condition.
+     * @return true if the salary condition is met, false otherwise.
+     */
     private boolean isSalaryConditionMet(Manager manager,
                                          BigDecimal multiplier,
                                          BiPredicate<BigDecimal, BigDecimal> salaryComparator) {
