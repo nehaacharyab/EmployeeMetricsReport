@@ -5,11 +5,19 @@ import org.bigcompany.service.IEmployeeService;
 import org.bigcompany.service.ISalaryService;
 import org.bigcompany.service.impl.EmployeeService;
 import org.bigcompany.service.impl.SalaryService;
-
+/**
+ * The ServiceFactory class is used to create instances of the EmployeeService and SalaryService classes.
+ * It ensures that only one instance of each service is created and shared across the application.
+ *
+ * @author Neha B Acharya
+ */
 public class ServiceFactory {
 
     private static IEmployeeService employeeService;
     private static ISalaryService salaryService;
+
+    private ServiceFactory() {
+    }
 
     public static IEmployeeService createEmployeeService() {
         if (employeeService == null) {
