@@ -66,7 +66,7 @@ public class ReportingService implements IReportingService {
             employee = employees.get(employee.getManagerId());
             length++;
         }
-        return length - 1;
+        return length;
     }
 
     /**

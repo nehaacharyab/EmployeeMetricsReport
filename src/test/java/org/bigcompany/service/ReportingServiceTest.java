@@ -53,8 +53,9 @@ class ReportingServiceTest {
         employeeService = new EmployeeServiceStub(employeeMap);
         reportingService = new ReportingService(employeeService, salaryService);
         Map<CompanyStaff, Integer> companyStaffList = reportingService.getEmployeeReportingLineLengths();
-        assertEquals(1, companyStaffList.size());
-        assertEquals(5, companyStaffList.get(employeeMap.get("7")));
+        assertEquals(2, companyStaffList.size());
+        assertEquals(6, companyStaffList.get(employeeMap.get("7")));
+        assertEquals(5, companyStaffList.get(employeeMap.get("6")));
     }
 
     /**
