@@ -34,8 +34,7 @@ public class SalaryService implements ISalaryService {
      */
     public Map<Manager, BigDecimal> getUnderpaidManagers(Map<String, CompanyStaff> employees) {
         return getManagersBySalaryCondition(employees, UNDERPAID_MULTIPLIER,
-                                            (managerSalary, expectedSalary) -> managerSalary.compareTo(expectedSalary) < 0,
-                                            UNDERPAID_MULTIPLIER);
+                                            (managerSalary, expectedSalary) -> managerSalary.compareTo(expectedSalary) < 0);
     }
 
     /**
@@ -46,8 +45,7 @@ public class SalaryService implements ISalaryService {
     public Map<Manager, BigDecimal> getOverpaidManagers(Map<String, CompanyStaff> employees) {
         return getManagersBySalaryCondition(employees,
                                             OVERPAID_MULTIPLIER,
-                                            (managerSalary, expectedSalary) -> expectedSalary.compareTo(managerSalary) < 0,
-                                            OVERPAID_MULTIPLIER);
+                                            (managerSalary, expectedSalary) -> expectedSalary.compareTo(managerSalary) < 0);
     }
 
     /**
@@ -77,20 +75,17 @@ public class SalaryService implements ISalaryService {
      * @param employees A map of all employees, keyed by their unique identifiers.
      * @param multiplier The multiplier to calculate the expected salary.
      * @param salaryComparator The salary comparator to check if the salary meets the condition.
-     * @param underOrOverPaymentMultiplier The multiplier to calculate the underpayment or overpayment amount.
      * @return A map of managers and their underpayment or overpayment amounts.
      */
     private Map<Manager, BigDecimal> getManagersBySalaryCondition(Map<String, CompanyStaff> employees,
                                                                   BigDecimal multiplier,
-                                                                  BiPredicate<BigDecimal, BigDecimal> salaryComparator,
-                                                                  BigDecimal underOrOverPaymentMultiplier) {
+                                                                  BiPredicate<BigDecimal, BigDecimal> salaryComparator) {
         return employees.values().stream()
                         .filter(Manager.class::isInstance)
                         .map(Manager.class::cast)
                         .filter(manager -> isSalaryConditionMet(manager, multiplier, salaryComparator))
                         .collect(Collectors.toMap(Function.identity(),
-                                                  manager -> calculateUnderOrOverPayment(manager,
-                                                                                         underOrOverPaymentMultiplier)));
+                                                  manager -> calculateUnderOrOverPayment(manager, multiplier)));
     }
 
     /**
