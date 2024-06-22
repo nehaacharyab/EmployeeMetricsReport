@@ -80,7 +80,6 @@ class EmployeeServiceTest {
      */
     @Test
     void testLoadAllEmployeeShouldReturnCorrectEmployeesCase2() {
-        // Given
         Map<String, CompanyStaff> employeeMap = Map.of(
                 "1", new Manager("1", "John", "Doe", new BigDecimal("5000"), null, new ArrayList<>()),
                 "2", new Manager("2", "Jane", "Doe", new BigDecimal("6000"), "1", new ArrayList<>()));
